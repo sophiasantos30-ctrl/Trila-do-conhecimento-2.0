@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trilha do Conhecimento - Jogo de Tabuleiro</title>
+  <title>Trilha do Conhecimento</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <script>
@@ -21,18 +20,6 @@
       }
     }
   </script>
-
-  <style>
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
-    .glass-modal {
-      background: rgba(10, 15, 30, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1.5px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    }
-  </style>
 </head>
 <body class="h-full flex flex-col font-sans bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100">
 
@@ -43,94 +30,73 @@
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white">
           <i class="fa-solid fa-dice-d20 text-xl"></i>
         </div>
-        <div>
-          <h1 class="font-heading font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-sky-400">
-            Trilha do Conhecimento
-          </h1>
-        </div>
+        <h1 class="font-heading font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-sky-400">
+          Trilha do Conhecimento
+        </h1>
       </div>
-      <div>
-        <button onclick="location.reload()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold border border-rose-800/50 transition">
-          <i class="fa-solid fa-rotate-left"></i> Reiniciar
-        </button>
-      </div>
+      <button onclick="location.reload()" class="px-3 py-1.5 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-semibold border border-rose-800 transition">
+        Reiniciar
+      </button>
     </div>
   </header>
 
-  <!-- MODAL DE CONFIGURAÇÃO (LOBBY) -->
+  <!-- LOBBY -->
   <div id="modalSetup" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-modal max-w-2xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 flex flex-col max-h-[90vh] overflow-y-auto">
+    <div class="bg-slate-900 max-w-2xl w-full rounded-3xl p-6 border border-slate-700 flex flex-col max-h-[90vh] overflow-y-auto shadow-2xl">
       
       <div class="text-center mb-5">
-        <h2 class="font-heading font-black text-3xl text-white">Configuração da Partida</h2>
-        <p class="text-sm text-slate-400 mt-1">Defina os jogadores e as regras do tabuleiro.</p>
+        <h2 class="font-heading font-black text-3xl text-white">Configuração</h2>
       </div>
 
-      <!-- Configuração de Regras pelo Líder -->
-      <div class="mb-6 p-4 bg-slate-900/80 border border-slate-700 rounded-xl">
-        <label class="block text-xs font-bold uppercase text-amber-400 mb-2">
-          <i class="fa-solid fa-crown"></i> Configurações do Líder: Tamanho do Tabuleiro
-        </label>
-        <select id="boardSizeSelect" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:border-amber-500 outline-none transition">
-          <option value="20">Partida Rápida (20 Casas)</option>
-          <option value="30">Partida Curta (30 Casas)</option>
-          <option value="40">Partida Média (40 Casas)</option>
-          <option value="50" selected>Partida Clássica (50 Casas)</option>
-          <option value="60">Partida Épica (60 Casas)</option>
+      <!-- Tamanho Tabuleiro -->
+      <div class="mb-6 p-4 bg-slate-800 rounded-xl border border-slate-600">
+        <label class="block text-xs font-bold uppercase text-amber-400 mb-2">Tamanho do Tabuleiro</label>
+        <select id="boardSizeSelect" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-600 text-white text-sm font-bold">
+          <option value="20">20 Casas</option>
+          <option value="30">30 Casas</option>
+          <option value="40">40 Casas</option>
+          <option value="50" selected>50 Casas</option>
+          <option value="60">60 Casas</option>
         </select>
       </div>
 
-      <!-- Quantidade de Jogadores -->
+      <!-- Jogadores -->
       <div class="mb-4">
         <label class="block text-xs font-bold uppercase text-slate-300 mb-2 text-center">Quantidade de Jogadores</label>
-        <div class="flex justify-center gap-2" id="playerCountButtons">
-          <!-- Botões gerados via JS -->
-        </div>
+        <div class="flex justify-center gap-2" id="playerCountButtons"></div>
       </div>
 
-      <!-- Container dos Jogadores -->
-      <div id="playerInputsContainer" class="space-y-3 mb-6">
-        <!-- Inputs gerados via JS -->
-      </div>
+      <div id="playerInputsContainer" class="space-y-3 mb-6"></div>
 
-      <button onclick="startGame()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:opacity-90 text-white font-black text-lg shadow-xl active:scale-95 transition">
-        <i class="fa-solid fa-play mr-2"></i> Iniciar Jogo
+      <button onclick="startGame()" class="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-lg transition">
+        Iniciar Jogo
       </button>
 
-      <!-- Simulação de ambiente Online / Transferência de Liderança -->
       <div class="mt-4 pt-4 border-t border-slate-800 text-center">
-        <p class="text-xs text-slate-500 mb-2">Testando modo online? Simule a saída do líder atual:</p>
-        <button onclick="simulateLeaderLeave()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition">
-          <i class="fa-solid fa-right-from-bracket"></i> Simular Saída do Líder
+        <button onclick="simulateLeaderLeave()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300">
+          Simular Saída do Líder
         </button>
       </div>
-
     </div>
   </div>
 
-  <!-- AREA DO JOGO PRINCIPAL -->
+  <!-- TABULEIRO -->
   <main class="flex-1 flex flex-col items-center justify-center p-4">
     <div id="gameBoardArea" class="hidden text-center w-full max-w-4xl">
-      <h2 class="text-3xl font-black text-amber-400 mb-2">O Tabuleiro Começou!</h2>
-      <p id="boardGoalText" class="text-slate-300 mb-8 font-semibold">Quem chegar na casa X primeiro, vence.</p>
+      <h2 class="text-3xl font-black text-amber-400 mb-2">O Jogo Começou!</h2>
+      <p id="boardGoalText" class="text-slate-300 mb-8 font-semibold"></p>
       
-      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl">
-        <!-- Lista de jogadores no jogo -->
-        <div id="activePlayersList" class="flex flex-wrap justify-center gap-6 mb-8">
-        </div>
+      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-700">
+        <div id="activePlayersList" class="flex flex-wrap justify-center gap-6 mb-8"></div>
         
-        <button onclick="drawRandomQuestion()" class="py-4 px-8 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 text-white font-bold text-lg shadow-lg shadow-indigo-500/30 transition active:scale-95">
-          <i class="fa-solid fa-clone mr-2"></i> Puxar Carta de Pergunta
+        <button onclick="drawRandomQuestion()" class="py-4 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg">
+          Puxar Carta de Pergunta
         </button>
       </div>
     </div>
   </main>
 
   <script>
-    // ==========================================
-    // 1. BASES DE DADOS (Personagens, Cores, Perguntas)
-    // ==========================================
-    
     const CHARACTERS = [
       { id: 'tito', name: 'Tito', icon: '🌐' },
       { id: 'albert', name: 'Albert', icon: '🧪' },
@@ -141,207 +107,131 @@
     ];
 
     const COLOR_OPTIONS = [
-      { hex: '#00e5ff', name: 'Ciano Neon' },
-      { hex: '#ffcc00', name: 'Ouro Brilhante' },
-      { hex: '#00e676', name: 'Esmeralda Neon' },
-      { hex: '#ff2a8d', name: 'Rosa Choque' },
-      { hex: '#d500f9', name: 'Violeta Elétrico' },
-      { hex: '#ff7000', name: 'Laranja Solar' }
+      { hex: '#00e5ff', name: 'Ciano' },
+      { hex: '#ffcc00', name: 'Ouro' },
+      { hex: '#00e676', name: 'Verde' },
+      { hex: '#ff2a8d', name: 'Rosa' },
+      { hex: '#d500f9', name: 'Roxo' },
+      { hex: '#ff7000', name: 'Laranja' }
     ];
 
-    // Banco de Perguntas
     let QUESTION_DATABASE = {
-      science: [
-        { text: 'Qual é a fórmula química da água?', options: ['CO2', 'H2O', 'NaCl', 'O2'], correct: 1 },
-        { text: 'Qual órgão humano bombeia o sangue?', options: ['Fígado', 'Pulmão', 'Coração', 'Rim'], correct: 2 },
-        { text: 'Qual é o planeta mais próximo do Sol?', options: ['Terra', 'Marte', 'Vênus', 'Mercúrio'], correct: 3 }
-      ],
-      geo: [
-        { text: 'Qual é o maior país do mundo em extensão?', options: ['Canadá', 'China', 'Rússia', 'EUA'], correct: 2 },
-        { text: 'Qual a capital do Japão?', options: ['Seul', 'Tóquio', 'Pequim', 'Bangkok'], correct: 1 },
-        { text: 'Em qual continente fica o Egito?', options: ['Ásia', 'África', 'Europa', 'América'], correct: 1 }
-      ],
-      history: [
-        { text: 'Quem descobriu o Brasil em 1500?', options: ['Cristóvão Colombo', 'Pedro Álvares Cabral', 'Vasco da Gama', 'Dom Pedro I'], correct: 1 },
-        { text: 'Em que ano começou a Segunda Guerra Mundial?', options: ['1914', '1939', '1945', '1929'], correct: 1 }
-      ]
+      science: [{ text: 'Fórmula da água?', correct: 1 }, { text: 'Planeta mais próximo do sol?', correct: 3 }],
+      geo: [{ text: 'Capital do Japão?', correct: 1 }, { text: 'Onde fica o Egito?', correct: 1 }]
     };
 
-    // ==========================================
-    // 2. VARIÁVEIS DE ESTADO DA PARTIDA
-    // ==========================================
-    
     let numPlayers = 2;
     let targetSpaces = 50; 
     let playersState = []; 
     let currentLeaderId = 1; 
 
-    // ==========================================
-    // 3. LÓGICA DE EMBARALHAMENTO (SHUFFLE)
-    // ==========================================
-    
-    function shuffleDecks() {
-      for (let category in QUESTION_DATABASE) {
-        QUESTION_DATABASE[category] = QUESTION_DATABASE[category].sort(() => Math.random() - 0.5);
-      }
-    }
-
-    // ==========================================
-    // 4. LÓGICA DA INTERFACE DE CONFIGURAÇÃO (LOBBY)
-    // ==========================================
-
     function setPlayerCount(count) {
       numPlayers = count;
-      const btnContainer = document.getElementById('playerCountButtons');
-      btnContainer.innerHTML = '';
-      
+      let btnsHTML = '';
       for(let i = 2; i <= 6; i++) {
-        const isSelected = i === count;
-        const btnClass = isSelected 
-          ? 'px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm shadow transition' 
-          : 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-black text-sm border border-slate-700 hover:bg-slate-700 transition';
-        
-        const btn = document.createElement('button');
-        btn.className = btnClass;
-        btn.innerText = i;
-        btn.onclick = () => setPlayerCount(i);
-        btnContainer.appendChild(btn);
+        let isSelected = (i === count);
+        let btnClass = isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300';
+        btnsHTML += `<button onclick="setPlayerCount(${i})" class="px-4 py-2 rounded-xl font-black text-sm ${btnClass}">${i}</button>`;
       }
+      document.getElementById('playerCountButtons').innerHTML = btnsHTML;
       renderPlayerInputs();
     }
 
     function renderPlayerInputs() {
-      const container = document.getElementById('playerInputsContainer');
-      container.innerHTML = ''; 
-
-      // Monta as opções HTML
-      const colorOptionsHTML = COLOR_OPTIONS.map(c => `<option value="${c.hex}">${c.name}</option>`).join('');
-      // Agora salvamos Ícone e Nome juntos no value, separados por um | (pipe)
-      const charOptionsHTML = CHARACTERS.map(c => `<option value="${c.icon}|${c.name}">${c.icon} ${c.name}</option>`).join('');
+      let html = '';
+      let colorHTML = COLOR_OPTIONS.map(c => `<option value="${c.hex}">${c.name}</option>`).join('');
+      let charHTML = CHARACTERS.map(c => `<option value="${c.icon}|${c.name}">${c.icon} ${c.name}</option>`).join('');
 
       for (let i = 1; i <= numPlayers; i++) {
-        const isLeader = i === currentLeaderId;
-        const leaderBadge = isLeader ? `<span class="ml-2 text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded-sm font-bold shadow-lg"><i class="fa-solid fa-crown"></i> LÍDER</span>` : '';
-
-        const playerRow = document.createElement('div');
-        playerRow.id = `playerRow_${i}`;
-        playerRow.className = `p-3 rounded-xl ${isLeader ? 'bg-indigo-900/40 border-indigo-500/50' : 'bg-slate-900/80 border-slate-700'} border flex flex-col sm:flex-row gap-3 relative`;
-        
-        playerRow.innerHTML = `
-          <div class="flex-1">
-            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center">
-              Jogador ${i} ${leaderBadge}
-            </label>
-            <input type="text" id="p${i}_name" value="Jogador ${i}" maxlength="12" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold focus:outline-none focus:border-indigo-500 transition">
-          </div>
-          <div class="flex-1">
-            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor</label>
-            <select id="p${i}_color" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:outline-none focus:border-indigo-500 transition">
-              ${colorOptionsHTML}
-            </select>
-          </div>
-          <div class="flex-1">
-            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
-            <select id="p${i}_char" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:outline-none focus:border-indigo-500 transition">
-              ${charOptionsHTML}
-            </select>
+        let isLeader = (i === currentLeaderId);
+        html += `
+          <div id="playerRow_${i}" class="p-3 rounded-xl ${isLeader ? 'bg-indigo-900/40' : 'bg-slate-800'} flex flex-col sm:flex-row gap-3">
+            <div class="flex-1">
+              <label class="block text-[10px] text-slate-400">Jogador ${i} ${isLeader ? '(Líder)' : ''}</label>
+              <input type="text" id="p${i}_name" value="Jogador ${i}" class="w-full px-2 py-1 bg-slate-950 text-white rounded">
+            </div>
+            <div class="flex-1">
+              <label class="block text-[10px] text-slate-400">Cor</label>
+              <select id="p${i}_color" class="w-full px-2 py-1 bg-slate-950 text-white rounded">${colorHTML}</select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-[10px] text-slate-400">Personagem</label>
+              <select id="p${i}_char" class="w-full px-2 py-1 bg-slate-950 text-white rounded">${charHTML}</select>
+            </div>
           </div>
         `;
-        container.appendChild(playerRow);
       }
+      document.getElementById('playerInputsContainer').innerHTML = html;
     }
-
-    // ==========================================
-    // 5. INICIAR O JOGO E TRANSIÇÃO DE LÍDER
-    // ==========================================
 
     function startGame() {
       targetSpaces = parseInt(document.getElementById('boardSizeSelect').value);
-      
       playersState = [];
+      
       for (let i = 1; i <= numPlayers; i++) {
         if(document.getElementById(`playerRow_${i}`)) {
-          // Extrai o icone e o nome que foram separados por |
-          const charData = document.getElementById(`p${i}_char`).value.split('|'); 
-
+          let charData = document.getElementById(`p${i}_char`).value.split('|'); 
           playersState.push({ 
             id: i, 
             name: document.getElementById(`p${i}_name`).value, 
             color: document.getElementById(`p${i}_color`).value, 
-            charIcon: charData[0], // Pega o ícone (ex: 🌐)
-            charName: charData[1], // Pega o nome (ex: Tito)
+            charIcon: charData[0],
+            charName: charData[1],
             isHost: (i === currentLeaderId),
             position: 0 
           });
         }
       }
 
-      shuffleDecks();
-
       document.getElementById('modalSetup').classList.add('hidden');
       document.getElementById('gameBoardArea').classList.remove('hidden');
-      document.getElementById('boardGoalText').innerText = `O primeiro a chegar na casa ${targetSpaces} vence!`;
+      document.getElementById('boardGoalText').innerText = `Chegue na casa ${targetSpaces} para vencer!`;
       
       updateBoardUI();
     }
 
     function updateBoardUI() {
-      const list = document.getElementById('activePlayersList');
-      list.innerHTML = '';
+      let html = '';
       playersState.forEach(p => {
-        list.innerHTML += `
-          <div class="flex flex-col items-center justify-center p-4 bg-slate-950 rounded-xl border-4 min-w-[120px] transition-transform hover:scale-105" style="border-color: ${p.color}; box-shadow: 0 4px 15px ${p.color}40;">
-            <span class="text-4xl mb-2 drop-shadow-md">${p.charIcon}</span>
-            <span class="text-sm font-black text-white text-center w-full truncate">${p.name}</span>
-            <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Casa ${p.position}</span>
-            ${p.isHost ? `<span class="mt-2 text-[10px] bg-amber-500 text-black px-2 py-0.5 rounded-full font-bold shadow"><i class="fa-solid fa-crown"></i> Líder</span>` : ''}
+        html += `
+          <div class="p-4 bg-slate-950 rounded-xl border-4 text-center min-w-[120px]" style="border-color: ${p.color};">
+            <div class="text-4xl mb-2">${p.charIcon}</div>
+            <div class="font-bold text-white">${p.name}</div>
+            <div class="text-xs text-slate-400 mt-1">Casa ${p.position}</div>
           </div>
         `;
       });
+      document.getElementById('activePlayersList').innerHTML = html;
     }
 
     function simulateLeaderLeave() {
-      if(numPlayers <= 1) return alert("Não há jogadores suficientes para passar a liderança.");
-      
-      alert(`O líder (Jogador ${currentLeaderId}) desconectou da sala!`);
-      
       const leaderRow = document.getElementById(`playerRow_${currentLeaderId}`);
       if(leaderRow) leaderRow.remove();
       
       for(let i = 1; i <= 6; i++) {
         if(i !== currentLeaderId && document.getElementById(`playerRow_${i}`)) {
           currentLeaderId = i;
-          alert(`Liderança transferida! Jogador ${i} agora é o líder da sala.`);
           renderPlayerInputs(); 
           break;
         }
       }
     }
 
-    // ==========================================
-    // 6. PUXAR PERGUNTAS (SEM REPETIR)
-    // ==========================================
-    
     function drawRandomQuestion() {
-      const categories = Object.keys(QUESTION_DATABASE);
-      const randomCat = categories[Math.floor(Math.random() * categories.length)];
-      const deck = QUESTION_DATABASE[randomCat];
-
-      if (deck.length === 0) {
-        alert(`Acabaram as perguntas da categoria ${randomCat.toUpperCase()}! Puxe novamente.`);
-        return;
-      }
-
-      const question = deck.pop(); 
+      const cats = Object.keys(QUESTION_DATABASE);
+      const cat = cats[Math.floor(Math.random() * cats.length)];
+      const deck = QUESTION_DATABASE[cat];
       
-      alert(`CATEGORIA: ${randomCat.toUpperCase()}\n\nPERGUNTA: ${question.text}\n\nRestam ${deck.length} cartas neste monte.`);
+      if(deck.length === 0) return alert("Perguntas esgotadas!");
+      
+      // Remove a pergunta para não repetir
+      const q = deck.splice(Math.floor(Math.random() * deck.length), 1)[0];
+      alert(`CATEGORIA: ${cat.toUpperCase()}\n\nPERGUNTA: ${q.text}`);
     }
 
-    // INICIALIZAÇÃO AUTOMÁTICA
     window.onload = () => {
       setPlayerCount(2); 
     };
-
   </script>
 </body>
 </html>
