@@ -50,7 +50,7 @@
         </div>
       </div>
       <div>
-        <button onclick="location.reload()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold border border-rose-800/50">
+        <button onclick="location.reload()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold border border-rose-800/50 transition">
           <i class="fa-solid fa-rotate-left"></i> Reiniciar
         </button>
       </div>
@@ -71,7 +71,7 @@
         <label class="block text-xs font-bold uppercase text-amber-400 mb-2">
           <i class="fa-solid fa-crown"></i> Configurações do Líder: Tamanho do Tabuleiro
         </label>
-        <select id="boardSizeSelect" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-600 text-white text-sm font-bold focus:border-amber-500 outline-none">
+        <select id="boardSizeSelect" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:border-amber-500 outline-none transition">
           <option value="20">Partida Rápida (20 Casas)</option>
           <option value="30">Partida Curta (30 Casas)</option>
           <option value="40">Partida Média (40 Casas)</option>
@@ -93,14 +93,14 @@
         <!-- Inputs gerados via JS -->
       </div>
 
-      <button onclick="startGame()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:opacity-90 text-slate-950 font-black text-lg shadow-xl active:scale-95 transition">
+      <button onclick="startGame()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:opacity-90 text-white font-black text-lg shadow-xl active:scale-95 transition">
         <i class="fa-solid fa-play mr-2"></i> Iniciar Jogo
       </button>
 
       <!-- Simulação de ambiente Online / Transferência de Liderança -->
       <div class="mt-4 pt-4 border-t border-slate-800 text-center">
         <p class="text-xs text-slate-500 mb-2">Testando modo online? Simule a saída do líder atual:</p>
-        <button onclick="simulateLeaderLeave()" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">
+        <button onclick="simulateLeaderLeave()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition">
           <i class="fa-solid fa-right-from-bracket"></i> Simular Saída do Líder
         </button>
       </div>
@@ -111,15 +111,16 @@
   <!-- AREA DO JOGO PRINCIPAL -->
   <main class="flex-1 flex flex-col items-center justify-center p-4">
     <div id="gameBoardArea" class="hidden text-center w-full max-w-4xl">
-      <h2 class="text-2xl font-black text-amber-400 mb-2">O Tabuleiro está rolando!</h2>
-      <p id="boardGoalText" class="text-slate-300 mb-6">Quem chegar na casa X primeiro, vence.</p>
+      <h2 class="text-3xl font-black text-amber-400 mb-2">O Tabuleiro Começou!</h2>
+      <p id="boardGoalText" class="text-slate-300 mb-8 font-semibold">Quem chegar na casa X primeiro, vence.</p>
       
-      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-700 shadow-xl">
-        <div id="activePlayersList" class="flex flex-wrap justify-center gap-4 mb-8">
-          <!-- Lista de jogadores no jogo -->
+      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl">
+        <!-- Lista de jogadores no jogo -->
+        <div id="activePlayersList" class="flex flex-wrap justify-center gap-6 mb-8">
         </div>
-        <button onclick="drawRandomQuestion()" class="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-500/30">
-          <i class="fa-solid fa-clone mr-2"></i> Puxar Carta de Pergunta Aleatória
+        
+        <button onclick="drawRandomQuestion()" class="py-4 px-8 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 text-white font-bold text-lg shadow-lg shadow-indigo-500/30 transition active:scale-95">
+          <i class="fa-solid fa-clone mr-2"></i> Puxar Carta de Pergunta
         </button>
       </div>
     </div>
@@ -140,15 +141,15 @@
     ];
 
     const COLOR_OPTIONS = [
-      { id: 'cyan', hex: '#00e5ff', name: 'Ciano Neon' },
-      { id: 'gold', hex: '#ffcc00', name: 'Ouro Brilhante' },
-      { id: 'emerald', hex: '#00e676', name: 'Esmeralda Neon' },
-      { id: 'pink', hex: '#ff2a8d', name: 'Rosa Choque' },
-      { id: 'violet', hex: '#d500f9', name: 'Violeta Elétrico' },
-      { id: 'orange', hex: '#ff7000', name: 'Laranja Solar' }
+      { hex: '#00e5ff', name: 'Ciano Neon' },
+      { hex: '#ffcc00', name: 'Ouro Brilhante' },
+      { hex: '#00e676', name: 'Esmeralda Neon' },
+      { hex: '#ff2a8d', name: 'Rosa Choque' },
+      { hex: '#d500f9', name: 'Violeta Elétrico' },
+      { hex: '#ff7000', name: 'Laranja Solar' }
     ];
 
-    // Banco de Perguntas (Pode adicionar mais seguindo esse padrão)
+    // Banco de Perguntas
     let QUESTION_DATABASE = {
       science: [
         { text: 'Qual é a fórmula química da água?', options: ['CO2', 'H2O', 'NaCl', 'O2'], correct: 1 },
@@ -171,20 +172,18 @@
     // ==========================================
     
     let numPlayers = 2;
-    let targetSpaces = 50; // Definido pelo líder
-    let playersState = []; // Array que guardará quem está jogando
-    let currentLeaderId = 1; // Controla quem é o dono da sala
+    let targetSpaces = 50; 
+    let playersState = []; 
+    let currentLeaderId = 1; 
 
     // ==========================================
     // 3. LÓGICA DE EMBARALHAMENTO (SHUFFLE)
     // ==========================================
     
-    // Mistura as perguntas para nunca caírem na mesma ordem
     function shuffleDecks() {
       for (let category in QUESTION_DATABASE) {
         QUESTION_DATABASE[category] = QUESTION_DATABASE[category].sort(() => Math.random() - 0.5);
       }
-      console.log("Cartas embaralhadas com sucesso!");
     }
 
     // ==========================================
@@ -199,10 +198,14 @@
       for(let i = 2; i <= 6; i++) {
         const isSelected = i === count;
         const btnClass = isSelected 
-          ? 'px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm shadow' 
-          : 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-black text-sm border border-slate-700';
+          ? 'px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm shadow transition' 
+          : 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-black text-sm border border-slate-700 hover:bg-slate-700 transition';
         
-        btnContainer.innerHTML += `<button onclick="setPlayerCount(${i})" class="${btnClass}">${i}</button>`;
+        const btn = document.createElement('button');
+        btn.className = btnClass;
+        btn.innerText = i;
+        btn.onclick = () => setPlayerCount(i);
+        btnContainer.appendChild(btn);
       }
       renderPlayerInputs();
     }
@@ -211,35 +214,40 @@
       const container = document.getElementById('playerInputsContainer');
       container.innerHTML = ''; 
 
+      // Monta as opções HTML
       const colorOptionsHTML = COLOR_OPTIONS.map(c => `<option value="${c.hex}">${c.name}</option>`).join('');
-      const charOptionsHTML = CHARACTERS.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join('');
+      // Agora salvamos Ícone e Nome juntos no value, separados por um | (pipe)
+      const charOptionsHTML = CHARACTERS.map(c => `<option value="${c.icon}|${c.name}">${c.icon} ${c.name}</option>`).join('');
 
       for (let i = 1; i <= numPlayers; i++) {
         const isLeader = i === currentLeaderId;
-        const leaderBadge = isLeader ? `<span class="ml-2 text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded-sm"><i class="fa-solid fa-crown"></i> LÍDER</span>` : '';
+        const leaderBadge = isLeader ? `<span class="ml-2 text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded-sm font-bold shadow-lg"><i class="fa-solid fa-crown"></i> LÍDER</span>` : '';
 
-        container.innerHTML += `
-          <div class="p-3 rounded-xl ${isLeader ? 'bg-indigo-900/40 border-indigo-500/50' : 'bg-slate-900/80 border-slate-700'} border flex flex-col sm:flex-row gap-3 relative" id="playerRow_${i}">
-            <div class="flex-1">
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center">
-                Jogador ${i} ${leaderBadge}
-              </label>
-              <input type="text" id="p${i}_name" value="Jogador ${i}" maxlength="12" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-            </div>
-            <div class="flex-1">
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor</label>
-              <select id="p${i}_color" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold">
-                ${colorOptionsHTML}
-              </select>
-            </div>
-            <div class="flex-1">
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
-              <select id="p${i}_char" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold">
-                ${charOptionsHTML}
-              </select>
-            </div>
+        const playerRow = document.createElement('div');
+        playerRow.id = `playerRow_${i}`;
+        playerRow.className = `p-3 rounded-xl ${isLeader ? 'bg-indigo-900/40 border-indigo-500/50' : 'bg-slate-900/80 border-slate-700'} border flex flex-col sm:flex-row gap-3 relative`;
+        
+        playerRow.innerHTML = `
+          <div class="flex-1">
+            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center">
+              Jogador ${i} ${leaderBadge}
+            </label>
+            <input type="text" id="p${i}_name" value="Jogador ${i}" maxlength="12" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold focus:outline-none focus:border-indigo-500 transition">
+          </div>
+          <div class="flex-1">
+            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor</label>
+            <select id="p${i}_color" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:outline-none focus:border-indigo-500 transition">
+              ${colorOptionsHTML}
+            </select>
+          </div>
+          <div class="flex-1">
+            <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
+            <select id="p${i}_char" class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm font-bold cursor-pointer focus:outline-none focus:border-indigo-500 transition">
+              ${charOptionsHTML}
+            </select>
           </div>
         `;
+        container.appendChild(playerRow);
       }
     }
 
@@ -248,29 +256,28 @@
     // ==========================================
 
     function startGame() {
-      // 1. Define o tamanho do tabuleiro escolhido pelo líder
       targetSpaces = parseInt(document.getElementById('boardSizeSelect').value);
       
-      // 2. Salva os dados dos jogadores
       playersState = [];
       for (let i = 1; i <= numPlayers; i++) {
-        // Verifica se a linha existe (pode ter sido removida numa simulação de saída)
         if(document.getElementById(`playerRow_${i}`)) {
+          // Extrai o icone e o nome que foram separados por |
+          const charData = document.getElementById(`p${i}_char`).value.split('|'); 
+
           playersState.push({ 
             id: i, 
             name: document.getElementById(`p${i}_name`).value, 
             color: document.getElementById(`p${i}_color`).value, 
-            char: document.getElementById(`p${i}_char`).value, 
+            charIcon: charData[0], // Pega o ícone (ex: 🌐)
+            charName: charData[1], // Pega o nome (ex: Tito)
             isHost: (i === currentLeaderId),
             position: 0 
           });
         }
       }
 
-      // 3. Mistura as perguntas para a nova partida
       shuffleDecks();
 
-      // 4. Esconde configuração, mostra tabuleiro
       document.getElementById('modalSetup').classList.add('hidden');
       document.getElementById('gameBoardArea').classList.remove('hidden');
       document.getElementById('boardGoalText').innerText = `O primeiro a chegar na casa ${targetSpaces} vence!`;
@@ -278,37 +285,34 @@
       updateBoardUI();
     }
 
-    // Atualiza visualmente quem está no jogo
     function updateBoardUI() {
       const list = document.getElementById('activePlayersList');
       list.innerHTML = '';
       playersState.forEach(p => {
         list.innerHTML += `
-          <div class="flex flex-col items-center p-3 bg-slate-800 rounded-xl border-2" style="border-color: ${p.color}">
-            <span class="text-3xl mb-1">${p.char.split(' ')[0]}</span>
-            <span class="text-xs font-bold">${p.name} ${p.isHost ? '👑' : ''}</span>
-            <span class="text-xs text-slate-400">Casa: ${p.position}</span>
+          <div class="flex flex-col items-center justify-center p-4 bg-slate-950 rounded-xl border-4 min-w-[120px] transition-transform hover:scale-105" style="border-color: ${p.color}; box-shadow: 0 4px 15px ${p.color}40;">
+            <span class="text-4xl mb-2 drop-shadow-md">${p.charIcon}</span>
+            <span class="text-sm font-black text-white text-center w-full truncate">${p.name}</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Casa ${p.position}</span>
+            ${p.isHost ? `<span class="mt-2 text-[10px] bg-amber-500 text-black px-2 py-0.5 rounded-full font-bold shadow"><i class="fa-solid fa-crown"></i> Líder</span>` : ''}
           </div>
         `;
       });
     }
 
-    // Simulador de Migração de Host (Líder sai da sala)
     function simulateLeaderLeave() {
       if(numPlayers <= 1) return alert("Não há jogadores suficientes para passar a liderança.");
       
       alert(`O líder (Jogador ${currentLeaderId}) desconectou da sala!`);
       
-      // Remove o líder atual do HTML
       const leaderRow = document.getElementById(`playerRow_${currentLeaderId}`);
       if(leaderRow) leaderRow.remove();
       
-      // Acha o próximo jogador disponível para ser líder
       for(let i = 1; i <= 6; i++) {
         if(i !== currentLeaderId && document.getElementById(`playerRow_${i}`)) {
           currentLeaderId = i;
           alert(`Liderança transferida! Jogador ${i} agora é o líder da sala.`);
-          renderPlayerInputs(); // Re-renderiza para mostrar a coroa no novo líder
+          renderPlayerInputs(); 
           break;
         }
       }
@@ -319,26 +323,23 @@
     // ==========================================
     
     function drawRandomQuestion() {
-      // Escolhe uma categoria aleatória
       const categories = Object.keys(QUESTION_DATABASE);
       const randomCat = categories[Math.floor(Math.random() * categories.length)];
       const deck = QUESTION_DATABASE[randomCat];
 
       if (deck.length === 0) {
-        alert("Acabaram as perguntas dessa categoria! Puxe novamente.");
+        alert(`Acabaram as perguntas da categoria ${randomCat.toUpperCase()}! Puxe novamente.`);
         return;
       }
 
-      // Tira a primeira pergunta do deck (como já estão embaralhadas, é aleatório e não repete)
       const question = deck.pop(); 
       
-      // Mostra a pergunta na tela
       alert(`CATEGORIA: ${randomCat.toUpperCase()}\n\nPERGUNTA: ${question.text}\n\nRestam ${deck.length} cartas neste monte.`);
     }
 
     // INICIALIZAÇÃO AUTOMÁTICA
     window.onload = () => {
-      setPlayerCount(2); // Inicia com 2 jogadores por padrão
+      setPlayerCount(2); 
     };
 
   </script>
