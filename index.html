@@ -3,16 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trilha do Conhecimento - Jogo de Tabuleiro Multijogador</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Trilha do Conhecimento - Jogo de Tabuleiro</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <!-- Google Fonts: Inter and Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <script>
@@ -22,39 +16,6 @@
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
             heading: ['"Outfit"', 'sans-serif'],
-          },
-          colors: {
-            catGeo: '#00b4ff',         // Azul Cyan Neon (Geografia - Willy)
-            catScience: '#00e676',     // Verde Elétrico (Ciências - Albert)
-            catHistory: '#ff7000',     // Laranja Solar (História - Tito)
-            catArts: '#ff2a8d',        // Rosa Choque (Artes - Bonzo)
-            catSports: '#ffcc00',      // Amarelo Ouro (Esportes - Tina)
-            catEnt: '#ff3355',         // Vermelho Carmim (Entretenimento - Pop)
-          },
-          animation: {
-            'bounce-short': 'bounceShort 0.5s ease-in-out 2',
-            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float': 'float 3s ease-in-out infinite',
-            'card-flip': 'cardFlip 0.6s ease-out forwards',
-            'glow-pulse': 'glowPulse 2s ease-in-out infinite',
-          },
-          keyframes: {
-            bounceShort: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-12px)' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-6px)' },
-            },
-            cardFlip: {
-              '0%': { transform: 'rotateY(90deg)', opacity: '0' },
-              '100%': { transform: 'rotateY(0deg)', opacity: '1' },
-            },
-            glowPulse: {
-              '0%, 100%': { filter: 'drop-shadow(0 0 8px rgba(255, 204, 0, 0.6))' },
-              '50%': { filter: 'drop-shadow(0 0 18px rgba(255, 204, 0, 0.95))' },
-            }
           }
         }
       }
@@ -62,2429 +23,324 @@
   </script>
 
   <style>
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #090d16;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #3b82f6;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #60a5fa;
-    }
-
-    .glass-card {
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    }
-
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
     .glass-modal {
       background: rgba(10, 15, 30, 0.95);
       backdrop-filter: blur(20px);
       border: 1.5px solid rgba(255, 255, 255, 0.18);
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     }
-
-    .dice-cube {
-      transform-style: preserve-3d;
-      transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.3, 1);
-    }
-
-    .tile-shadow {
-      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 6px 12px rgba(0, 0, 0, 0.5);
-    }
-
-    .pawn-glow {
-      filter: drop-shadow(0 0 8px currentColor);
-    }
-
-    .board-grid {
-      display: grid;
-      grid-template-columns: repeat(10, minmax(68px, 1fr));
-      gap: 10px;
-    }
-
-    @media (max-width: 768px) {
-      .board-grid {
-        grid-template-columns: repeat(5, minmax(58px, 1fr));
-        gap: 6px;
-      }
-    }
   </style>
 </head>
-<body class="h-full flex flex-col font-sans bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100 antialiased selection:bg-pink-500 selection:text-white">
+<body class="h-full flex flex-col font-sans bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100">
 
-  <!-- TOP NAVIGATION / SCOREBAR -->
+  <!-- CABEÇALHO -->
   <header class="w-full bg-slate-900/90 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 shadow-lg">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <!-- Logo & Title -->
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white">
           <i class="fa-solid fa-dice-d20 text-xl"></i>
         </div>
         <div>
-          <h1 class="font-heading font-extrabold text-lg md:text-xl bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400">
+          <h1 class="font-heading font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-sky-400">
             Trilha do Conhecimento
           </h1>
-          <p class="text-xs text-slate-400 hidden sm:block">Edição Multijogador Local (2 a 6 Jogadores)</p>
         </div>
       </div>
-
-      <!-- Quick Actions / Sound Toggle -->
-      <div class="flex items-center gap-2">
-        <!-- ONLINE ROOM DISPLAY BADGE -->
-        <div id="onlineRoomBadge" class="hidden px-3 py-1.5 rounded-lg bg-indigo-950/90 border border-indigo-500/50 text-indigo-300 text-xs font-bold flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Sala: <strong id="displayRoomCode" class="text-amber-300 font-mono tracking-wider">----</strong></span>
-          <button onclick="copyRoomCode()" class="ml-1 hover:text-white transition" title="Copiar código da sala">
-            <i class="fa-regular fa-copy"></i>
-          </button>
-        </div>
-
-        <button id="btnSound" onclick="toggleSound()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-2 border border-slate-700 transition">
-          <i id="soundIcon" class="fa-solid fa-volume-high text-emerald-400"></i>
-          <span class="hidden md:inline">Som: ON</span>
-        </button>
-        <button onclick="openRulesModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-2 border border-slate-700 transition">
-          <i class="fa-solid fa-book-open text-sky-400"></i>
-          <span class="hidden md:inline">Regras</span>
-        </button>
-        <button onclick="confirmReset()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold flex items-center gap-2 border border-rose-800/50 transition">
-          <i class="fa-solid fa-rotate-left"></i>
-          <span>Novo Jogo</span>
+      <div>
+        <button onclick="location.reload()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold border border-rose-800/50">
+          <i class="fa-solid fa-rotate-left"></i> Reiniciar
         </button>
       </div>
     </div>
+  </header>
 
-  <!-- SETUP MODAL (MODAL DE INÍCIO - LOCAL OU ONLINE) -->
+  <!-- MODAL DE CONFIGURAÇÃO (LOBBY) -->
   <div id="modalSetup" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-modal max-w-2xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-2xl max-h-[90vh] flex flex-col">
-      <!-- Header -->
+    <div class="glass-modal max-w-2xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 flex flex-col max-h-[90vh] overflow-y-auto">
+      
       <div class="text-center mb-5">
-        <div class="inline-flex p-3 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-amber-400 text-3xl mb-2">
-          <i class="fa-solid fa-users-gear"></i>
-        </div>
-        <h2 class="font-heading font-black text-2xl sm:text-3xl text-white">Configuração da Partida</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Escolha como prefere jogar e personalize seu participante</p>
+        <h2 class="font-heading font-black text-3xl text-white">Configuração da Partida</h2>
+        <p class="text-sm text-slate-400 mt-1">Defina os jogadores e as regras do tabuleiro.</p>
       </div>
 
-      <!-- Mode Selector Tabs: Local vs Online -->
-      <div class="grid grid-cols-2 gap-3 mb-6 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800">
-        <button id="tabLocalMode" onclick="switchGameMode('local')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition bg-indigo-600 text-white shadow">
-          <i class="fa-solid fa-desktop"></i> Jogar Local (Mesmo Telão)
+      <!-- Configuração de Regras pelo Líder -->
+      <div class="mb-6 p-4 bg-slate-900/80 border border-slate-700 rounded-xl">
+        <label class="block text-xs font-bold uppercase text-amber-400 mb-2">
+          <i class="fa-solid fa-crown"></i> Configurações do Líder: Tamanho do Tabuleiro
+        </label>
+        <select id="boardSizeSelect" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-600 text-white text-sm font-bold focus:border-amber-500 outline-none">
+          <option value="20">Partida Rápida (20 Casas)</option>
+          <option value="30">Partida Curta (30 Casas)</option>
+          <option value="40">Partida Média (40 Casas)</option>
+          <option value="50" selected>Partida Clássica (50 Casas)</option>
+          <option value="60">Partida Épica (60 Casas)</option>
+        </select>
+      </div>
+
+      <!-- Quantidade de Jogadores -->
+      <div class="mb-4">
+        <label class="block text-xs font-bold uppercase text-slate-300 mb-2 text-center">Quantidade de Jogadores</label>
+        <div class="flex justify-center gap-2" id="playerCountButtons">
+          <!-- Botões gerados via JS -->
+        </div>
+      </div>
+
+      <!-- Container dos Jogadores -->
+      <div id="playerInputsContainer" class="space-y-3 mb-6">
+        <!-- Inputs gerados via JS -->
+      </div>
+
+      <button onclick="startGame()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:opacity-90 text-slate-950 font-black text-lg shadow-xl active:scale-95 transition">
+        <i class="fa-solid fa-play mr-2"></i> Iniciar Jogo
+      </button>
+
+      <!-- Simulação de ambiente Online / Transferência de Liderança -->
+      <div class="mt-4 pt-4 border-t border-slate-800 text-center">
+        <p class="text-xs text-slate-500 mb-2">Testando modo online? Simule a saída do líder atual:</p>
+        <button onclick="simulateLeaderLeave()" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">
+          <i class="fa-solid fa-right-from-bracket"></i> Simular Saída do Líder
         </button>
-        <button id="tabOnlineMode" onclick="switchGameMode('online')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition text-slate-400 hover:text-white">
-          <i class="fa-solid fa-wifi"></i> Jogar Online (Outro Dispositivo)
-        </button>
       </div>
 
-      <!-- LOCAL SETUP VIEW -->
-      <div id="setupLocalView" class="flex-1 flex flex-col overflow-hidden">
-        <!-- Player Count Selector -->
-        <div class="mb-4">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 text-center">
-            Quantidade de Jogadores ou Equipes
-          </label>
-          <div class="flex justify-center gap-2 sm:gap-3" id="playerCountButtons">
-            <button type="button" onclick="setPlayerCount(2)" class="count-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm border border-indigo-400 shadow">2</button>
-            <button type="button" onclick="setPlayerCount(3)" class="count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700">3</button>
-            <button type="button" onclick="setPlayerCount(4)" class="count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700">4</button>
-            <button type="button" onclick="setPlayerCount(5)" class="count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700">5</button>
-            <button type="button" onclick="setPlayerCount(6)" class="count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700">6</button>
-          </div>
-        </div>
-
-        <!-- Player Customization Form Cards Container -->
-        <div id="playerInputsContainer" class="flex-1 overflow-y-auto pr-2 space-y-4 mb-4">
-          <!-- Dynamic Player configuration rows injected by JS -->
-        </div>
-
-        <button onclick="startGameLocal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-slate-950 font-black text-lg shadow-xl shadow-emerald-500/20 active:scale-98 transition">
-          <i class="fa-solid fa-play mr-2"></i> Iniciar Tabuleiro Local
-        </button>
-      </div>
-
-      <!-- ONLINE SETUP VIEW -->
-      <div id="setupOnlineView" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto pr-1">
-        
-        <!-- Online Player Info Customization -->
-        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-amber-400 flex items-center gap-2">
-            <i class="fa-solid fa-user-astronaut"></i> Seu Perfil de Jogador Online
-          </h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Seu Apelido / Nome</label>
-              <input type="text" id="onlinePlayerName" value="Jogador Online" maxlength="14" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor do Peão</label>
-              <select id="onlinePlayerColor" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                <!-- Color Options -->
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
-              <select id="onlinePlayerClass" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                <!-- Character Options -->
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Room Action Options: Create or Join -->
-        <div id="onlineRoomActions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Create Room Card -->
-          <div class="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 flex flex-col justify-between text-center space-y-3">
-            <div>
-              <i class="fa-solid fa-plus-circle text-3xl text-indigo-400 mb-2"></i>
-              <h4 class="font-heading font-extrabold text-white text-base">Criar Nova Sala</h4>
-              <p class="text-xs text-slate-400 mt-1">Gere um código para convidar amigos de outros celulares ou PCs.</p>
-            </div>
-            <button onclick="handleCreateOnlineRoom()" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow transition">
-              <i class="fa-solid fa-key mr-1.5"></i> Gerar Código de Sala
-            </button>
-          </div>
-
-          <!-- Join Room Card -->
-          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between text-center space-y-3">
-            <div>
-              <i class="fa-solid fa-right-to-bracket text-3xl text-emerald-400 mb-2"></i>
-              <h4 class="font-heading font-extrabold text-white text-base">Entrar em Sala Existente</h4>
-              <p class="text-xs text-slate-400 mt-1">Digite o código de 4 caracteres fornecido pelo criador da sala.</p>
-            </div>
-            <div class="space-y-2">
-              <input type="text" id="inputJoinCode" placeholder="Ex: A8X2" uppercase maxlength="6" class="w-full px-3 py-2 text-center uppercase tracking-widest font-mono text-sm font-extrabold rounded-xl bg-slate-950 border border-slate-700 text-amber-300 focus:outline-none focus:border-emerald-500">
-              <button onclick="handleJoinOnlineRoom()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow transition">
-                <i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i> Entrar na Sala
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Online Lobby Waiting Area (Visible once room is created/joined) -->
-        <div id="onlineLobbyView" class="hidden p-4 rounded-2xl bg-slate-900/95 border border-indigo-500/50 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <div class="text-[10px] font-bold text-slate-400 uppercase">Código da Sala</div>
-              <div id="lobbyRoomCode" class="font-mono text-2xl font-black text-amber-300 tracking-wider flex items-center gap-2">
-                ----
-                <button onclick="copyRoomCode()" class="text-xs text-indigo-400 hover:text-white" title="Copiar código">
-                  <i class="fa-regular fa-copy"></i>
-                </button>
-              </div>
-            </div>
-            <div class="text-right">
-              <span id="lobbyStatusBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-950 text-indigo-300 border border-indigo-700">
-                Aguardando Jogadores...
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <h5 class="text-xs font-bold uppercase text-slate-300 mb-2 flex items-center justify-between">
-              <span>Jogadores Conectados (<span id="lobbyCount">1</span>/6)</span>
-              <span class="text-[10px] text-slate-400 italic">Sincronizado via Nuvem</span>
-            </h5>
-            <div id="lobbyPlayersList" class="space-y-2 max-h-[140px] overflow-y-auto pr-1">
-              <!-- Connected players injected dynamically -->
-            </div>
-          </div>
-
-          <div id="hostControlsArea" class="pt-2">
-            <button id="btnStartOnlineGame" onclick="handleStartOnlineGame()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 text-slate-950 font-black text-sm shadow-lg transition">
-              <i class="fa-solid fa-play mr-2"></i> Iniciar Partida Online
-            </button>
-          </div>
-        </div>
-
-      </div>
     </div>
   </div>
 
-  <!-- QUESTION CARD MODAL -->
-  <div id="modalQuestion" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-lg hidden">
-    <div class="glass-modal max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-2xl relative animate-card-flip max-h-[90vh] overflow-y-auto">
+  <!-- AREA DO JOGO PRINCIPAL -->
+  <main class="flex-1 flex flex-col items-center justify-center p-4">
+    <div id="gameBoardArea" class="hidden text-center w-full max-w-4xl">
+      <h2 class="text-2xl font-black text-amber-400 mb-2">O Tabuleiro está rolando!</h2>
+      <p id="boardGoalText" class="text-slate-300 mb-6">Quem chegar na casa X primeiro, vence.</p>
       
-      <!-- Top Close Button -->
-      <button onclick="closeQuestionModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition" title="Sair da pergunta">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <!-- Category Badge Header -->
-      <div class="flex items-center justify-between gap-2 mb-4 pr-8">
-        <div id="qCatBadge" class="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow">
-          <i id="qCatIcon" class="fa-solid fa-flask"></i>
-          <span id="qCatName">Ciências</span>
+      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-700 shadow-xl">
+        <div id="activePlayersList" class="flex flex-wrap justify-center gap-4 mb-8">
+          <!-- Lista de jogadores no jogo -->
         </div>
-
-        <div class="flex items-center gap-2">
-          <span id="qDiffBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-amber-300 border border-slate-700">
-            Dificuldade: Média
-          </span>
-          <span id="qPointsBadge" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-950 text-indigo-300 border border-indigo-700">
-            +200 pts
-          </span>
-        </div>
-      </div>
-
-      <!-- Card Title & Deck counter -->
-      <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
-        <span><i class="fa-solid fa-layer-group text-slate-500"></i> Carta sorteada do monte</span>
-        <span id="qDeckRemaining" class="font-semibold text-slate-300">Restam 12 cartas</span>
-      </div>
-
-      <!-- Question Text -->
-      <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 my-3">
-        <h3 id="qText" class="font-heading font-bold text-base sm:text-lg text-white leading-relaxed">
-          Qual é o elemento químico mais abundante no universo?
-        </h3>
-      </div>
-
-      <!-- Timer Bar -->
-      <div class="w-full bg-slate-800 h-2 rounded-full mb-4 overflow-hidden">
-        <div id="qTimerBar" class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 h-full w-full transition-all duration-1000"></div>
-      </div>
-
-      <!-- Options Container -->
-      <div id="qOptions" class="space-y-2.5 mb-5">
-        <!-- 4 Option buttons injected by JS -->
-      </div>
-
-      <!-- Feedback Area -->
-      <div id="qFeedback" class="hidden p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all">
-        <!-- Result text and explanation -->
-      </div>
-      <!-- Continue / Exit Button (Hidden until answered or closeable) -->
-      <button id="btnNextTurn" onclick="closeQuestionModal()" class="hidden w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-lg transition flex items-center justify-center gap-2">
-        <span>Sair / Continuar Partida</span>
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
-
-    </div>
-  </div>
-
-  <!-- PODIUM / VICTORY MODAL -->
-  <div id="modalVictory" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl hidden">
-    <div class="glass-modal max-w-2xl w-full rounded-3xl p-6 sm:p-8 border border-amber-500/40 shadow-2xl text-center relative overflow-hidden">
-      
-      <!-- Trophy Icon Header -->
-      <div class="inline-flex p-4 rounded-3xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-5xl mb-3 animate-bounce-short">
-        <i class="fa-solid fa-trophy"></i>
-      </div>
-      <h2 class="font-heading font-black text-3xl sm:text-4xl text-white bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">
-        Fim de Jogo!
-      </h2>
-      <p class="text-sm text-slate-300 mt-1 mb-6">Atingiu a Casa 50 e venceu a Trilha do Conhecimento!</p>
-
-      <!-- Podium Top 3 Container -->
-      <div id="podiumContainer" class="flex items-end justify-center gap-3 sm:gap-6 mb-8 pt-4 min-h-[200px]">
-        <!-- Injected Top 3 Podium Bars -->
-      </div>
-
-      <!-- Complete Ranking Table -->
-      <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 text-left mb-6">
-        <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-list-ol text-amber-400"></i> Classificação Final Completa
-        </h4>
-        <div id="rankingList" class="space-y-2 text-sm">
-          <!-- Ranking rows injected by JS -->
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex flex-wrap gap-3">
-        <button onclick="restartSamePlayers()" class="flex-1 py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition">
-          <i class="fa-solid fa-rotate-right mr-2"></i> Jogar Novamente
-        </button>
-        <button onclick="openSetupModal()" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-slate-950 font-black text-sm shadow-lg transition">
-          <i class="fa-solid fa-users-gear mr-2"></i> Configurar Novos Jogadores
+        <button onclick="drawRandomQuestion()" class="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-clone mr-2"></i> Puxar Carta de Pergunta Aleatória
         </button>
       </div>
-
     </div>
-  </div>
-
-  <!-- RULES MODAL -->
-  <div id="modalRules" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
-    <div class="glass-modal max-w-lg w-full rounded-3xl p-6 border border-slate-700 shadow-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-        <h3 class="font-heading font-black text-xl text-white flex items-center gap-2">
-          <i class="fa-solid fa-book-open text-sky-400"></i> Regras do Jogo
-        </h3>
-        <button onclick="closeRulesModal()" class="text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-xl"></i>
-        </button>
-      </div>
-      <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
-        <p>1. <strong>Objetivo:</strong> Chegar à <strong>Casa 50</strong> primeiro no tabuleiro e somar a maior pontuação respondendo a perguntas do conhecimento geral.</p>
-        <p>2. <strong>Cores das Casas:</strong>
-          <br />• <span class="text-emerald-400 font-bold">Verde</span>: Ciências 🧪
-          <br />• <span class="text-orange-400 font-bold">Laranja</span>: Artes 🎨
-          <br />• <span class="text-yellow-400 font-bold">Amarelo</span>: Esportes ⚽
-          <br />• <span class="text-sky-400 font-bold">Azul</span>: Geografia 🌍
-          <br />• <span class="text-pink-400 font-bold">Rosa</span>: Entretenimento 🎬
-          <br />• <span class="text-red-400 font-bold">Vermelho</span>: História 🏛️
-        </p>
-        <p>3. <strong>Desafio de Perguntas:</strong> Ao cair numa casa, retira-se uma carta do monte correspondente (Fácil, Médio ou Difícil). Cartas retiradas são <em>eliminadas do monte</em> para evitar perguntas repetidas.</p>
-        <p>4. <strong>Recompensas e Penalidades:</strong>
-          <br />• Resposta correta: Ganha pontos (100 a 300 pts) e <strong>Avança 1 a 2 casas bônus</strong>!
-          <br />• Resposta incorreta / Tempo esgotado: Perde a chance de bônus ou recua 1 casa.
-        </p>
-        <p>5. <strong>Vitória:</strong> O primeiro jogador a alcançar a casa final (50) encerra o jogo e ativa o pódio final de pontuação!</p>
-      </div>
-      <button onclick="closeRulesModal()" class="w-full mt-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700">
-        Entendi! Fechar
-      </button>
-    </div>
-  </div>
+  </main>
 
   <script>
-    /* GAME DATA & CATEGORIES CONSTANTS */
-    const CATEGORIES = {
-      geo: { id: 'geo', name: 'Geografia (Willy)', mascot: 'Willy', color: '#00b4ff', border: 'border-sky-400', bg: 'bg-sky-950/90', text: 'text-sky-300', icon: 'fa-earth-americas', desc: 'Países, capitais, bandeiras, relevo e mapas' },
-      science: { id: 'science', name: 'Ciências (Albert)', mascot: 'Albert', color: '#00e676', border: 'border-emerald-400', bg: 'bg-emerald-950/90', text: 'text-emerald-300', icon: 'fa-flask', desc: 'Biologia, física, química, astronomia e corpo humano' },
-      history: { id: 'history', name: 'História (Tito)', mascot: 'Tito', color: '#ff7000', border: 'border-orange-400', bg: 'bg-orange-950/90', text: 'text-orange-300', icon: 'fa-landmark', desc: 'Fatos históricos, guerras, impérios e personalidades' },
-      arts: { id: 'arts', name: 'Artes (Bonzo)', mascot: 'Bonzo', color: '#ff2a8d', border: 'border-pink-400', bg: 'bg-pink-950/90', text: 'text-pink-300', icon: 'fa-palette', desc: 'Pintura, literatura, música, arquitetura e cinema clássico' },
-      sports: { id: 'sports', name: 'Esportes (Tina)', mascot: 'Tina', color: '#ffcc00', border: 'border-yellow-400', bg: 'bg-yellow-950/90', text: 'text-yellow-300', icon: 'fa-futbol', desc: 'Regras de jogos, Olimpíadas, atletas e campeonatos' },
-      ent: { id: 'ent', name: 'Entretenimento (Pop)', mascot: 'Pop', color: '#ff3355', border: 'border-red-400', bg: 'bg-red-950/90', text: 'text-red-300', icon: 'fa-film', desc: 'Cultura pop, celebridades, TV, videogames e quadrinhos' }
-    };
-
+    // ==========================================
+    // 1. BASES DE DADOS (Personagens, Cores, Perguntas)
+    // ==========================================
+    
     const CHARACTERS = [
-      { id: 'tito', name: 'Tito', desc: 'Globo terrestre', icon: '🌐' },
-      { id: 'albert', name: 'Albert', desc: 'Tubo de ensaio cientista', icon: '🧪' },
-      { id: 'hector', name: 'Hector', desc: 'Armadura medieval corajosa', icon: '🛡️' },
-      { id: 'tina', name: 'Tina', desc: 'Pincel artista', icon: '🖌️' },
-      { id: 'bonzo', name: 'Bonzo', desc: 'Haltere fortão', icon: '🏋️' },
-      { id: 'pop', name: 'Pop', desc: 'Balde de pipoca divertido', icon: '🍿' }
+      { id: 'tito', name: 'Tito', icon: '🌐' },
+      { id: 'albert', name: 'Albert', icon: '🧪' },
+      { id: 'hector', name: 'Hector', icon: '🛡️' },
+      { id: 'tina', name: 'Tina', icon: '🖌️' },
+      { id: 'bonzo', name: 'Bonzo', icon: '🏋️' },
+      { id: 'pop', name: 'Pop', icon: '🍿' }
     ];
 
     const COLOR_OPTIONS = [
-      { id: 'cyan', hex: '#00e5ff', name: 'Ciano Neon', bg: 'bg-cyan-400' },
-      { id: 'gold', hex: '#ffcc00', name: 'Ouro Brilhante', bg: 'bg-yellow-400' },
-      { id: 'emerald', hex: '#00e676', name: 'Esmeralda Neon', bg: 'bg-emerald-400' },
-      { id: 'pink', hex: '#ff2a8d', name: 'Rosa Choque', bg: 'bg-pink-500' },
-      { id: 'violet', hex: '#d500f9', name: 'Violeta Elétrico', bg: 'bg-purple-500' },
-      { id: 'orange', hex: '#ff7000', name: 'Laranja Solar', bg: 'bg-orange-500' }
+      { id: 'cyan', hex: '#00e5ff', name: 'Ciano Neon' },
+      { id: 'gold', hex: '#ffcc00', name: 'Ouro Brilhante' },
+      { id: 'emerald', hex: '#00e676', name: 'Esmeralda Neon' },
+      { id: 'pink', hex: '#ff2a8d', name: 'Rosa Choque' },
+      { id: 'violet', hex: '#d500f9', name: 'Violeta Elétrico' },
+      { id: 'orange', hex: '#ff7000', name: 'Laranja Solar' }
     ];
 
-    /* QUESTION DECK DATABASE (FÁCIL, MÉDIO, DIFÍCIL POR CATEGORIA) */
-    const QUESTION_DATABASE = {
+    // Banco de Perguntas (Pode adicionar mais seguindo esse padrão)
+    let QUESTION_DATABASE = {
       science: [
-        { level: 'Fácil', points: 100, text: 'Qual é a fórmula química da água salgada e pura fundamental?', options: ['CO2', 'H2O', 'NaCl', 'O2'], correct: 1, explanation: 'H2O é constituído por dois átomos de hidrogênio e um de oxigênio.' },
-        { level: 'Fácil', points: 100, text: 'Qual órgão humano é responsável por bombear o sangue?', options: ['Fígado', 'Pulmão', 'Coração', 'Rim'], correct: 2, explanation: 'O coração funciona como bomba propulsora de sangue no organismo.' },
-        { level: 'Médio', points: 200, text: 'Qual é a velocidade aproximada da luz no vácuo?', options: ['300.000 km/s', '150.000 km/s', '1.000.000 km/s', '30.000 km/s'], correct: 0, explanation: 'A velocidade da luz no vácuo é de cerca de 299.792 km por segundo.' },
-        { level: 'Médio', points: 200, text: 'Qual gás é mais abundante na atmosfera terrestre?', options: ['Oxigênio', 'Gás Carbônico', 'Nitrogênio', 'Hidrogênio'], correct: 2, explanation: 'O Nitrogênio (N2) compõe aproximadamente 78% do ar atmosférico.' },
-        { level: 'Difícil', points: 300, text: 'Qual partícula subatômica possui carga elétrica positiva?', options: ['Elétron', 'Próton', 'Nêutron', 'Fóton'], correct: 1, explanation: 'Os prótons possuem carga positiva no núcleo atômico.' },
-        { level: 'Difícil', points: 300, text: 'Quem formulou a teoria da relatividade geral?', options: ['Isaac Newton', 'Albert Einstein', 'Galileu Galilei', 'Niels Bohr'], correct: 1, explanation: 'Albert Einstein publicou a Teoria da Relatividade Geral em 1915.' }
-      ],
-      arts: [
-        { level: 'Fácil', points: 100, text: 'Quem pintou a famosa obra Mona Lisa?', options: ['Vincent van Gogh', 'Leonardo da Vinci', 'Pablo Picasso', 'Claude Monet'], correct: 1, explanation: 'Leonardo da Vinci pintou a Mona Lisa entre 1503 e 1506.' },
-        { level: 'Fácil', points: 100, text: 'Qual artista holandês pintou "A Noite Estrelada"?', options: ['Rembrandt', 'Van Gogh', 'Vermeer', 'Mondrian'], correct: 1, explanation: 'Vincent van Gogh pintou a obra no asilo em Saint-Rémy.' },
-        { level: 'Médio', points: 200, text: 'Qual movimento artístico é famoso pelas esculturas do mestre Aleijadinho no Brasil?', options: ['Barroco', 'Modernismo', 'Neoclassicismo', 'Impressionismo'], correct: 0, explanation: 'Aleijadinho foi o maior expoente do Barroco mineiro.' },
-        { level: 'Médio', points: 200, text: 'Qual pintor é o maior expoente do Cubismo mundial?', options: ['Salvador Dalí', 'Pablo Picasso', 'Edvard Munch', 'Gustav Klimt'], correct: 1, explanation: 'Picasso co-fundou o movimento cubista no início do século XX.' },
-        { level: 'Difícil', points: 300, text: 'Quem esculpiu a obra estatuária David e o teto da Capela Sistina?', options: ['Donatello', 'Michelangelo', 'Rafael', 'Bernini'], correct: 1, explanation: 'Michelangelo Buonarroti é o mestre renascentista responsável.' },
-        { level: 'Difícil', points: 300, text: 'Em que ano ocorreu a influente Semana de Arte Moderna no Brasil?', options: ['1922', '1908', '1930', '1917'], correct: 0, explanation: 'Aconteceu em fevereiro de 1922 no Theatro Municipal de São Paulo.' }
-      ],
-      sports: [
-        { level: 'Fácil', points: 100, text: 'Quantos jogadores de cada time entram em campo numa partida de futebol tradicional?', options: ['10', '11', '12', '9'], correct: 1, explanation: 'Cada equipe entra com 11 titulares incluindo o goleiro.' },
-        { level: 'Fácil', points: 100, text: 'Em qual esporte se usa o termo "Home Run"?', options: ['Basquete', 'Beisebol', 'Tênis', 'Golf'], correct: 1, explanation: 'Home Run ocorre quando a rebatedor rebete para fora do campo de beisebol.' },
-        { level: 'Médio', points: 200, text: 'Quantos títulos da Copa do Mundo FIFA a Seleção Brasileira masculina conquistou?', options: ['4', '5', '6', '3'], correct: 1, explanation: 'O Brasil é pentacampeão (1958, 1962, 1970, 1994, 2002).' },
-        { level: 'Médio', points: 200, text: 'Qual nadador é o maior medalhista olímpico da história mundial?', options: ['Michael Phelps', 'Usain Bolt', 'Ian Thorpe', 'César Cielo'], correct: 0, explanation: 'Michael Phelps acumulou 28 medalhas olímpicas na carreira.' },
-        { level: 'Difícil', points: 300, text: 'Onde foram realizados os primeiros Jogos Olímpicos da era moderna em 1896?', options: ['Paris', 'Atenas', 'Londres', 'Roma'], correct: 1, explanation: 'Atenas, na Grécia, sediou a abertura dos Jogos de Verão em 1896.' },
-        { level: 'Difícil', points: 300, text: 'Quantos minutos dura cada quarto de partida na NBA de basquete?', options: ['10 min', '12 min', '15 min', '20 min'], correct: 1, explanation: 'A NBA disputa 4 quartos de 12 minutos cada.' }
+        { text: 'Qual é a fórmula química da água?', options: ['CO2', 'H2O', 'NaCl', 'O2'], correct: 1 },
+        { text: 'Qual órgão humano bombeia o sangue?', options: ['Fígado', 'Pulmão', 'Coração', 'Rim'], correct: 2 },
+        { text: 'Qual é o planeta mais próximo do Sol?', options: ['Terra', 'Marte', 'Vênus', 'Mercúrio'], correct: 3 }
       ],
       geo: [
-        { level: 'Fácil', points: 100, text: 'Qual é o maior país do mundo em extensão territorial?', options: ['Canadá', 'China', 'Rússia', 'Estados Unidos'], correct: 2, explanation: 'A Rússia possui mais de 17 milhões de quilômetros quadrados.' },
-        { level: 'Fácil', points: 100, text: 'Qual é a capital oficial da França?', options: ['Madri', 'Roma', 'Londres', 'Paris'], correct: 3, explanation: 'Paris é a capital e cidade mais populosa da França.' },
-        { level: 'Médio', points: 200, text: 'Qual é o oceano mais extenso do planeta Terra?', options: ['Atlântico', 'Índico', 'Pacífico', 'Glacial Ártico'], correct: 2, explanation: 'O Oceano Pacífico cobre mais de 30% da superfície terrestre.' },
-        { level: 'Médio', points: 200, text: 'Qual cordilheira de montanhas abriga o Pico Everest?', options: ['Andes', 'Himalaia', 'Alpes', 'Rochosas'], correct: 1, explanation: 'O Everest está situado na Cordilheira do Himalaia, na fronteira Nepal-China.' },
-        { level: 'Difícil', points: 300, text: 'Qual é o país mais populoso do continente africano?', options: ['Egito', 'Nigéria', 'África do Sul', 'Etiópia'], correct: 1, explanation: 'A Nigéria conta com mais de 220 milhões de habitantes.' },
-        { level: 'Difícil', points: 300, text: 'Qual o rio mais extenso em volume de água e comprimento do mundo?', options: ['Rio Nilo', 'Rio Amazonas', 'Rio Mississippi', 'Rio Yangtzé'], correct: 1, explanation: 'O Rio Amazonas supera em volume hídrico e extensão.' }
-      ],
-      ent: [
-        { level: 'Fácil', points: 100, text: 'Qual personagem dos desenhos ama comer espinafre para ganhar força?', options: ['Pica-Pau', 'Popeye', 'Bob Esponja', 'Mickey'], correct: 1, explanation: 'Popeye o marinheiro ganha superforça com espinafre.' },
-        { level: 'Fácil', points: 100, text: 'Qual franquia de filmes tem os personagens Luke Skywalker e Darth Vader?', options: ['Star Trek', 'Star Wars', 'Harry Potter', 'Senhor dos Anéis'], correct: 1, explanation: 'Star Wars é a aclamada saga espacial criada por George Lucas.' },
-        { level: 'Médio', points: 200, text: 'Qual filme ganhou o Oscar de Melhor Filme em 2020, fazendo história como primeiro em língua estrangeira?', options: ['Parasita', '1917', 'Coringa', 'O Irlandês'], correct: 0, explanation: 'Parasita (Coreia do Sul) venceu o Oscar principal de 2020.' },
-        { level: 'Médio', points: 200, text: 'Qual o nome do bruxo protagonista da famosa saga escrita por J.K. Rowling?', options: ['Percy Jackson', 'Harry Potter', 'Gandalf', 'Eragon'], correct: 1, explanation: 'Harry Potter é o jovem bruxo de Hogwarts.' },
-        { level: 'Difícil', points: 300, text: 'Qual é o console de videogame mais vendido de todos os tempos?', options: ['Nintendo DS', 'PlayStation 2', 'Game Boy', 'Nintendo Switch'], correct: 1, explanation: 'O PlayStation 2 superou a marca de 155 milhões de unidades.' },
-        { level: 'Difícil', points: 300, text: 'Quem dirigiu os filmes "A Origem", "Interestelar" e "Oppenheimer"?', options: ['Steven Spielberg', 'Christopher Nolan', 'Quentin Tarantino', 'Denis Villeneuve'], correct: 1, explanation: 'Christopher Nolan dirigiu essas aclamadas produções.' }
+        { text: 'Qual é o maior país do mundo em extensão?', options: ['Canadá', 'China', 'Rússia', 'EUA'], correct: 2 },
+        { text: 'Qual a capital do Japão?', options: ['Seul', 'Tóquio', 'Pequim', 'Bangkok'], correct: 1 },
+        { text: 'Em qual continente fica o Egito?', options: ['Ásia', 'África', 'Europa', 'América'], correct: 1 }
       ],
       history: [
-        { level: 'Fácil', points: 100, text: 'Em que ano o homem pisou pela primeira vez na Lua?', options: ['1965', '1969', '1972', '1959'], correct: 1, explanation: 'A missão Apollo 11 pousou na Lua em julho de 1969.' },
-        { level: 'Fácil', points: 100, text: 'Quem proclamou a Independência do Brasil às margens do Ipiranga em 1822?', options: ['Dom Pedro I', 'Dom Pedro II', 'Tiradentes', 'Marechal Deodoro'], correct: 0, explanation: 'Dom Pedro I declarou a independência do Reino de Portugal em 1822.' },
-        { level: 'Médio', points: 200, text: 'Qual civilização antiga construiu as grandes Pirâmides de Gizé?', options: ['Grega', 'Romana', 'Egípcia', 'Mesopotâmica'], correct: 2, explanation: 'O Egito Antigo ergueu as pirâmides como tumbas faraônicas.' },
-        { level: 'Médio', points: 200, text: 'Em que ano teve início a Segunda Guerra Mundial na Europa?', options: ['1914', '1939', '1945', '1918'], correct: 1, explanation: 'A Segunda Guerra começou em setembro de 1939 com a invasão da Polônia.' },
-        { level: 'Difícil', points: 300, text: 'Quem foi o primeiro presidente da República dos Estados Unidos do Brasil em 1889?', options: ['Getúlio Vargas', 'Marechal Deodoro da Fonseca', 'Floriano Peixoto', 'Juscelino Kubitschek'], correct: 1, explanation: 'Deodoro da Fonseca proclamou a República e assumiu o governo provisório.' },
-        { level: 'Difícil', points: 300, text: 'Em que século ocorreu a Queda de Constantinopla marcando o fim do Império Bizantino?', options: ['Século XIII', 'Século XV (1453)', 'Século XIV', 'Século XVI'], correct: 1, explanation: 'Ocorreu em 1453 (Século XV) tomada pelos turcos otomanos.' }
+        { text: 'Quem descobriu o Brasil em 1500?', options: ['Cristóvão Colombo', 'Pedro Álvares Cabral', 'Vasco da Gama', 'Dom Pedro I'], correct: 1 },
+        { text: 'Em que ano começou a Segunda Guerra Mundial?', options: ['1914', '1939', '1945', '1929'], correct: 1 }
       ]
     };
 
-    /* AUDIO SYNTHESIZER FOR SOUND EFFECTS */
-    let soundEnabled = true;
-    let audioCtx = null;
+    // ==========================================
+    // 2. VARIÁVEIS DE ESTADO DA PARTIDA
+    // ==========================================
+    
+    let numPlayers = 2;
+    let targetSpaces = 50; // Definido pelo líder
+    let playersState = []; // Array que guardará quem está jogando
+    let currentLeaderId = 1; // Controla quem é o dono da sala
 
-    function getAudioCtx() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // ==========================================
+    // 3. LÓGICA DE EMBARALHAMENTO (SHUFFLE)
+    // ==========================================
+    
+    // Mistura as perguntas para nunca caírem na mesma ordem
+    function shuffleDecks() {
+      for (let category in QUESTION_DATABASE) {
+        QUESTION_DATABASE[category] = QUESTION_DATABASE[category].sort(() => Math.random() - 0.5);
       }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
+      console.log("Cartas embaralhadas com sucesso!");
     }
 
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      const btnIcon = document.getElementById('soundIcon');
-      const btnText = document.querySelector('#btnSound span');
-      if (soundEnabled) {
-        btnIcon.className = 'fa-solid fa-volume-high text-emerald-400';
-        if(btnText) btnText.textContent = 'Som: ON';
-        playBeep(523.25, 0.1);
-      } else {
-        btnIcon.className = 'fa-solid fa-volume-xmark text-rose-400';
-        if(btnText) btnText.textContent = 'Som: OFF';
-      }
-    }
-
-    function playBeep(freq, duration, type = 'sine') {
-      if (!soundEnabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + duration);
-      } catch (e) {
-        console.log('Audio init effect deferred');
-      }
-    }
-
-    function playDiceSound() {
-      if (!soundEnabled) return;
-      for(let i=0; i<6; i++) {
-        setTimeout(() => {
-          playBeep(200 + Math.random()*400, 0.05, 'triangle');
-        }, i * 60);
-      }
-    }
-
-    function playSuccessSound() {
-      if (!soundEnabled) return;
-      [440, 554.37, 659.25, 880].forEach((freq, idx) => {
-        setTimeout(() => playBeep(freq, 0.15, 'sine'), idx * 90);
-      });
-    }
-
-    function playWrongSound() {
-      if (!soundEnabled) return;
-      [300, 250, 200].forEach((freq, idx) => {
-        setTimeout(() => playBeep(freq, 0.2, 'sawtooth'), idx * 100);
-      });
-    }
-
-    /* GAME STATE VARIABLES */
-    let selectedPlayerCount = 2;
-    let players = [];
-    let currentPlayerIndex = 0;
-    let activeDecks = {};
-    let boardTiles = []; // 50 tiles with category assignments
-    let currentQuestion = null;
-    let questionTimer = null;
-    let timerSecondsLeft = 25;
-    let isRolling = false;
-
-    /* TILE CATEGORY ASSIGNMENTS (0 to 50) */
-    function buildBoardTiles() {
-      boardTiles = [];
-      const keys = Object.keys(CATEGORIES);
-      
-      // Tile 0: Start
-      boardTiles.push({ id: 0, category: null, name: 'Início', type: 'start' });
-
-      // Tiles 1 to 49: Cycle categories
-      for (let i = 1; i < 50; i++) {
-        const catKey = keys[(i - 1) % keys.length];
-        boardTiles.push({
-          id: i,
-          category: CATEGORIES[catKey],
-          type: 'normal'
-        });
-      }
-
-      // Tile 50: Finish / Chegada
-      boardTiles.push({ id: 50, category: null, name: 'Chegada 🏆', type: 'finish' });
-    }
-
-    /* RENDER BOARD GRID */
-    function renderBoard() {
-      const gridEl = document.getElementById('boardGrid');
-      gridEl.innerHTML = '';
-
-      boardTiles.forEach((tile) => {
-        const tileDiv = document.createElement('div');
-        tileDiv.id = `tile-${tile.id}`;
-        tileDiv.className = `relative flex flex-col items-center justify-between p-2 rounded-2xl min-h-[78px] transition-all duration-300 border tile-shadow select-none hover:scale-105 hover:z-10`;
-
-        if (tile.type === 'start') {
-          tileDiv.className += ' bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-900 border-indigo-400 text-indigo-100 shadow-lg shadow-indigo-500/30';
-        } else if (tile.type === 'finish') {
-          tileDiv.className += ' bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 border-2 border-white text-slate-950 font-black animate-glow-pulse';
-        } else {
-          const cat = tile.category;
-          // Saturated vibrant background & vivid glowing borders
-          tileDiv.style.backgroundColor = `${cat.color}28`;
-          tileDiv.style.borderColor = `${cat.color}bb`;
-          tileDiv.style.boxShadow = `0 4px 15px ${cat.color}30, inset 0 1px 3px rgba(255, 255, 255, 0.3)`;
-        }
-
-        // Tile Number Header
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'w-full flex items-center justify-between text-[11px] font-black opacity-100';
-        
-        const numSpan = document.createElement('span');
-        numSpan.className = 'px-1.5 py-0.5 rounded-full bg-slate-950/80 text-white border border-white/20 shadow-sm';
-        numSpan.textContent = tile.id;
-        headerDiv.appendChild(numSpan);
-
-        if (tile.category) {
-          const catIcon = document.createElement('i');
-          catIcon.className = `fa-solid ${tile.category.icon} text-sm drop-shadow-[0_0_6px_currentColor]`;
-          catIcon.style.color = tile.category.color;
-          headerDiv.appendChild(catIcon);
-        } else if (tile.type === 'start') {
-          headerDiv.innerHTML += '<i class="fa-solid fa-flag-checkered text-indigo-300"></i>';
-        } else if (tile.type === 'finish') {
-          headerDiv.innerHTML += '<i class="fa-solid fa-trophy text-slate-950"></i>';
-        }
-
-        tileDiv.appendChild(headerDiv);
-
-        // Center Tile Title
-        const centerDiv = document.createElement('div');
-        centerDiv.className = 'text-center my-0.5';
-        if (tile.type === 'start') {
-          centerDiv.innerHTML = '<span class="text-[10px] font-black uppercase tracking-wider text-indigo-200">Início</span>';
-        } else if (tile.type === 'finish') {
-          centerDiv.innerHTML = '<span class="text-xs font-black uppercase tracking-wider text-slate-950 drop-shadow">FIM 🏆</span>';
-        }
-        tileDiv.appendChild(centerDiv);
-
-        // Pawns Container space on tile
-        const pawnsDiv = document.createElement('div');
-        pawnsDiv.id = `tile-pawns-${tile.id}`;
-        pawnsDiv.className = 'w-full flex flex-wrap items-center justify-center gap-1 min-h-[22px]';
-        tileDiv.appendChild(pawnsDiv);
-
-        gridEl.appendChild(tileDiv);
-      });
-
-      updatePawnsOnBoard();
-    }
-
-    /* UPDATE PAWNS ON BOARD */
-    function updatePawnsOnBoard() {
-      // Clear all pawns container
-      for (let i = 0; i <= 50; i++) {
-        const container = document.getElementById(`tile-pawns-${i}`);
-        if (container) container.innerHTML = '';
-      }
-
-      // Render players pawns on their current tiles
-      players.forEach((player) => {
-        const container = document.getElementById(`tile-pawns-${player.position}`);
-        if (container) {
-          const pawn = document.createElement('div');
-          pawn.className = `w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-lg transition-all duration-300 transform hover:scale-125 cursor-pointer border border-white/40 pawn-glow`;
-          pawn.style.backgroundColor = player.color.hex;
-          pawn.style.color = '#000';
-          pawn.title = `${player.name} (${player.className}) - Casa ${player.position}`;
-          pawn.innerHTML = `<span class="drop-shadow">${player.classIcon}</span>`;
-
-          // Active player highlight
-          if (players[currentPlayerIndex].id === player.id) {
-            pawn.classList.add('ring-2', 'ring-white', 'scale-110', 'animate-bounce');
-          }
-
-          container.appendChild(pawn);
-        }
-      });
-    }
-
-    /* RENDER LIVE LEADERBOARD HEADER BAR */
-    function renderLiveLeaderboard() {
-      const container = document.getElementById('liveLeaderboard');
-      container.innerHTML = '';
-
-      // Sort a copy by position then points for preview
-      const sorted = [...players].sort((a,b) => b.position - a.position || b.points - a.points);
-
-      sorted.forEach((p, rank) => {
-        const isTurn = players[currentPlayerIndex].id === p.id;
-        const card = document.createElement('div');
-        card.className = `px-3 py-1.5 rounded-xl border text-xs flex items-center gap-2.5 shrink-0 transition-all ${
-          isTurn 
-            ? 'bg-indigo-900/80 border-indigo-400 ring-1 ring-indigo-400 text-white shadow-md' 
-            : 'bg-slate-900/60 border-slate-800 text-slate-300'
-        }`;
-
-        card.innerHTML = `
-          <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 font-bold" style="background-color: ${p.color.hex}; color: #000">
-            ${p.classIcon}
-          </div>
-          <div class="flex flex-col">
-            <div class="font-extrabold flex items-center gap-1.5">
-              <span>${p.name}</span>
-              ${isTurn ? '<span class="text-[9px] px-1 py-0.2 rounded bg-emerald-500 text-slate-950 font-black uppercase">Vez</span>' : ''}
-            </div>
-            <div class="text-[10px] text-slate-400 flex items-center gap-2">
-              <span>Casa <strong class="text-amber-300">${p.position}</strong></span>
-              <span>•</span>
-              <span><strong class="text-emerald-300">${p.points}</strong> pts</span>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    /* UPDATE TURN CONTROL PANEL */
-    function updateTurnPanel() {
-      const player = players[currentPlayerIndex];
-      const turnAvatar = document.getElementById('turnAvatar');
-      const turnPlayerName = document.getElementById('turnPlayerName');
-      const turnPos = document.getElementById('turnPos');
-      const turnPts = document.getElementById('turnPts');
-      const turnBadge = document.getElementById('turnBadge');
-
-      turnAvatar.style.backgroundColor = player.color.hex;
-      turnAvatar.textContent = player.classIcon;
-      turnPlayerName.textContent = player.name;
-      turnPos.textContent = player.position;
-      turnPts.textContent = player.points;
-
-      turnBadge.style.borderColor = player.color.hex;
-
-      renderLiveLeaderboard();
-      updatePawnsOnBoard();
-      renderDeckCounters();
-    }
-
-    /* RENDER DECK COUNTERS IN SIDEBAR */
-    function renderDeckCounters() {
-      const container = document.getElementById('deckCounters');
-      container.innerHTML = '';
-
-      Object.keys(CATEGORIES).forEach(catKey => {
-        const cat = CATEGORIES[catKey];
-        const count = activeDecks[catKey] ? activeDecks[catKey].length : 0;
-
-        const box = document.createElement('div');
-        box.className = `p-2 rounded-xl border flex items-center justify-between ${cat.bg} ${cat.border} text-slate-200`;
-        box.innerHTML = `
-          <div class="flex items-center gap-1.5 truncate">
-            <i class="fa-solid ${cat.icon} ${cat.text}"></i>
-            <span class="font-semibold truncate text-[11px]">${cat.name}</span>
-          </div>
-          <span class="font-black px-1.5 py-0.5 rounded bg-slate-950/80 text-[10px] text-amber-300 ml-1">
-            ${count}
-          </span>
-        `;
-        container.appendChild(box);
-      });
-    }
-
-    /* LOG EVENT TO ACTIVITY FEED */
-    function logEvent(msg) {
-      const logEl = document.getElementById('gameLog');
-      const entry = document.createElement('div');
-      entry.className = 'p-1.5 rounded bg-slate-900/80 border border-slate-800 text-[11px] leading-snug';
-      entry.innerHTML = msg;
-      logEl.prepend(entry);
-    }
-
-    /* DICE ROLL LOGIC */
-    function handleRollDice() {
-      if (isRolling) return;
-      isRolling = true;
-      getAudioCtx(); // initialize audio
-
-      const btnRoll = document.getElementById('btnRollDice');
-      btnRoll.disabled = true;
-      btnRoll.classList.add('opacity-50', 'cursor-not-allowed');
-
-      playDiceSound();
-
-      const diceVisual = document.getElementById('diceVisual');
-      const diceResultText = document.getElementById('diceResultText');
-
-      diceResultText.textContent = 'Rolando o dado...';
-      diceVisual.classList.add('animate-spin');
-
-      setTimeout(() => {
-        diceVisual.classList.remove('animate-spin');
-        const rolledValue = Math.floor(Math.random() * 6) + 1;
-
-        // Dice emoji map
-        const diceEmojis = ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-        diceVisual.textContent = diceEmojis[rolledValue];
-        diceResultText.textContent = `Tirou o número ${rolledValue}!`;
-
-        const player = players[currentPlayerIndex];
-        logEvent(`🎲 <strong>${player.name}</strong> rolou <strong>${rolledValue}</strong> no dado.`);
-
-        // Advance movement
-        setTimeout(() => {
-          advancePlayer(player, rolledValue);
-        }, 600);
-
-      }, 1000);
-    }
-
-    /* ADVANCE PLAYER LOGIC */
-    function advancePlayer(player, steps) {
-      const startPos = player.position;
-      let targetPos = startPos + steps;
-      if (targetPos > 50) targetPos = 50; // Cap at max board space 50
-
-      let currentStep = startPos;
-      const stepInterval = setInterval(() => {
-        if (currentStep < targetPos) {
-          currentStep++;
-          player.position = currentStep;
-          playBeep(400 + currentStep * 10, 0.08, 'sine');
-          updatePawnsOnBoard();
-        } else {
-          clearInterval(stepInterval);
-
-          // Check if reached finish tile 50
-          if (player.position === 50) {
-            handleVictory(player);
-            return;
-          }
-
-          // Trigger space question drawer
-          setTimeout(() => {
-            triggerSpaceEvent(player);
-          }, 400);
-        }
-      }, 250);
-    }
-
-    /* TRIGGER SPACE QUESTION DRAW */
-    function triggerSpaceEvent(player) {
-      const currentTile = boardTiles[player.position];
-      
-      if (!currentTile.category) {
-        // Special space (Start)
-        logEvent(`📌 <strong>${player.name}</strong> parou no Início.`);
-        endTurn();
-        return;
-      }
-
-      const cat = currentTile.category;
-      drawQuestionCard(cat.id, player);
-    }
-
-    /* DRAW QUESTION FROM SPECIFIC DECK WITHOUT REPLACEMENT */
-    function drawQuestionCard(catKey, player) {
-      let deck = activeDecks[catKey];
-
-      // If deck is exhausted, replenish deck pool from original database to keep game rolling
-      if (!deck || deck.length === 0) {
-        logEvent(`⚠️ O monte de <strong>${CATEGORIES[catKey].name}</strong> foi reabastecido!`);
-        activeDecks[catKey] = [...QUESTION_DATABASE[catKey]];
-        deck = activeDecks[catKey];
-      }
-
-      // Draw random card from current category deck and remove it from array (No replacement)
-      const cardIndex = Math.floor(Math.random() * deck.length);
-      currentQuestion = deck.splice(cardIndex, 1)[0];
-
-      // Open Question Modal
-      showQuestionModal(catKey, player, currentQuestion, deck.length);
-    }
-
-    /* SHOW QUESTION MODAL */
-    function showQuestionModal(catKey, player, q, deckRemainingCount) {
-      const cat = CATEGORIES[catKey];
-      const modal = document.getElementById('modalQuestion');
-      
-      const qCatBadge = document.getElementById('qCatBadge');
-      qCatBadge.style.backgroundColor = cat.color;
-      qCatBadge.style.color = '#000';
-
-      document.getElementById('qCatIcon').className = `fa-solid ${cat.icon}`;
-      document.getElementById('qCatName').textContent = cat.name;
-
-      document.getElementById('qDiffBadge').textContent = `Dificuldade: ${q.level}`;
-      document.getElementById('qPointsBadge').textContent = `+${q.points} pts`;
-      document.getElementById('qDeckRemaining').textContent = `Restam ${deckRemainingCount} cartas no monte`;
-
-      document.getElementById('qText').textContent = q.text;
-
-      // Reset Feedback and Next button
-      const feedbackEl = document.getElementById('qFeedback');
-      feedbackEl.className = 'hidden p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all';
-      feedbackEl.innerHTML = '';
-
-      document.getElementById('btnNextTurn').classList.add('hidden');
-
-      // Render Options
-      const optionsEl = document.getElementById('qOptions');
-      optionsEl.innerHTML = '';
-
-      q.options.forEach((optText, idx) => {
-        const optBtn = document.createElement('button');
-        optBtn.className = 'opt-btn w-full p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-left font-semibold text-sm transition flex items-center justify-between group';
-        optBtn.onclick = () => handleAnswerOption(idx, player, q);
-        optBtn.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center font-bold text-xs text-amber-400 group-hover:border-amber-400">
-              ${String.fromCharCode(65 + idx)}
-            </span>
-            <span>${optText}</span>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-amber-400"></i>
-        `;
-        optionsEl.appendChild(optBtn);
-      });
-
-      // Start countdown timer
-      startQuestionTimer(player, q);
-
-      modal.classList.remove('hidden');
-    }
-
-    /* QUESTION COUNTDOWN TIMER */
-    function startQuestionTimer(player, q) {
-      clearInterval(questionTimer);
-      timerSecondsLeft = 25;
-      const timerBar = document.getElementById('qTimerBar');
-      timerBar.style.width = '100%';
-
-      questionTimer = setInterval(() => {
-        timerSecondsLeft--;
-        const percentage = (timerSecondsLeft / 25) * 100;
-        timerBar.style.width = `${percentage}%`;
-
-        if (timerSecondsLeft <= 0) {
-          clearInterval(questionTimer);
-          handleTimeOut(player, q);
-        }
-      }, 1000);
-    }
-
-    /* HANDLE ANSWER OPTION CLICK */
-    function handleAnswerOption(selectedIdx, player, q) {
-      clearInterval(questionTimer);
-
-      // Disable option buttons
-      const optBtns = document.querySelectorAll('.opt-btn');
-      optBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('cursor-not-allowed', 'opacity-60');
-      });
-
-      const feedbackEl = document.getElementById('qFeedback');
-      const isCorrect = selectedIdx === q.correct;
-
-      if (isCorrect) {
-        playSuccessSound();
-        player.points += q.points;
-
-        // Bonus move forward
-        const bonusMove = q.level === 'Fácil' ? 1 : (q.level === 'Médio' ? 1 : 2);
-        player.position = Math.min(50, player.position + bonusMove);
-
-        feedbackEl.className = 'p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-sm font-semibold text-left mb-4 shadow';
-        feedbackEl.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-emerald-400 text-base mb-1">
-            <i class="fa-solid fa-circle-check"></i> Resposta Correta!
-          </div>
-          <p>Você ganhou <strong>+${q.points} pontos</strong> e avançou mais <strong>+${bonusMove} casa(s)</strong> bônus!</p>
-          <p class="text-xs text-emerald-300/80 mt-2 italic">${q.explanation}</p>
-        `;
-
-        logEvent(`✅ <strong>${player.name}</strong> acertou a pergunta (+${q.points} pts, +${bonusMove} casa bônus).`);
-      } else {
-        playWrongSound();
-        
-        // Minor penalty
-        if (player.position > 0) {
-          player.position = Math.max(0, player.position - 1);
-        }
-
-        feedbackEl.className = 'p-4 rounded-2xl bg-rose-950/90 border border-rose-500 text-rose-200 text-sm font-semibold text-left mb-4 shadow';
-        feedbackEl.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-rose-400 text-base mb-1">
-            <i class="fa-solid fa-circle-xmark"></i> Resposta Incorreta!
-          </div>
-          <p>A resposta certa era: <strong>${q.options[q.correct]}</strong>.</p>
-          <p class="text-xs text-rose-300/80 mt-1">Recuou 1 casa pelo deslize.</p>
-        `;
-
-        logEvent(`❌ <strong>${player.name}</strong> errou a pergunta de ${q.level}.`);
-      }
-
-      feedbackEl.classList.remove('hidden');
-      document.getElementById('btnNextTurn').classList.remove('hidden');
-      
-      updatePawnsOnBoard();
-      renderLiveLeaderboard();
-    }
-
-    /* HANDLE TIME OUT */
-    function handleTimeOut(player, q) {
-      playWrongSound();
-      
-      const optBtns = document.querySelectorAll('.opt-btn');
-      optBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('cursor-not-allowed', 'opacity-60');
-      });
-
-      const feedbackEl = document.getElementById('qFeedback');
-      feedbackEl.className = 'p-4 rounded-2xl bg-amber-950/90 border border-amber-500 text-amber-200 text-sm font-semibold text-left mb-4 shadow';
-      feedbackEl.innerHTML = `
-        <div class="flex items-center gap-2 font-bold text-amber-400 text-base mb-1">
-          <i class="fa-solid fa-hourglass-end"></i> Tempo Esgotado!
-        </div>
-        <p>A resposta correta era: <strong>${q.options[q.correct]}</strong>.</p>
-      `;
-
-      logEvent(`⌛ O tempo de <strong>${player.name}</strong> esgotou na pergunta.`);
-
-      feedbackEl.classList.remove('hidden');
-      document.getElementById('btnNextTurn').classList.remove('hidden');
-    }
-
-    /* CLOSE QUESTION MODAL & NEXT TURN */
-    function closeQuestionModal() {
-      clearInterval(questionTimer);
-      document.getElementById('modalQuestion').classList.add('hidden');
-
-      // Check if player reached 50 on bonus step
-      const player = players[currentPlayerIndex];
-      if (player.position >= 50) {
-        player.position = 50;
-        handleVictory(player);
-        return;
-      }
-
-      endTurn();
-    }
-
-    /* END TURN SWITCHING */
-    function endTurn() {
-      const btnRoll = document.getElementById('btnRollDice');
-      btnRoll.disabled = false;
-      btnRoll.classList.remove('opacity-50', 'cursor-not-allowed');
-      isRolling = false;
-
-      // Rotate turn to next player
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      updateTurnPanel();
-    }
-
-    /* HANDLE VICTORY & PODIUM */
-    function handleVictory(winner) {
-      playSuccessSound();
-
-      // Trigger Confetti
-      try {
-        confetti({
-          particleCount: 120,
-          spread: 80,
-          origin: { y: 0.6 }
-        });
-      } catch (e) {}
-
-      logEvent(`🏆 <strong>${winner.name}</strong> VENCEU A TRILHA DO CONHECIMENTO! 🎉`);
-
-      // Sort players for podium
-      const ranking = [...players].sort((a,b) => b.position - a.position || b.points - a.points);
-
-      // Render Podium Top 3
-      const podiumEl = document.getElementById('podiumContainer');
-      podiumEl.innerHTML = '';
-
-      // Podium order: 2nd, 1st, 3rd
-      const podiumOrder = [];
-      if (ranking[1]) podiumOrder.push({ player: ranking[1], place: 2, height: 'h-32', bg: 'bg-slate-400', label: '2º Lugar' });
-      if (ranking[0]) podiumOrder.push({ player: ranking[0], place: 1, height: 'h-44', bg: 'bg-amber-400 text-slate-950', label: '1º Vencedor 🏆' });
-      if (ranking[2]) podiumOrder.push({ player: ranking[2], place: 3, height: 'h-24', bg: 'bg-amber-700', label: '3º Lugar' });
-
-      podiumOrder.forEach(item => {
-        const p = item.player;
-        const col = document.createElement('div');
-        col.className = 'flex flex-col items-center justify-end';
-
-        col.innerHTML = `
-          <div class="mb-2 text-center">
-            <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-xl shadow-lg border border-white/20" style="background-color: ${p.color.hex}">
-              ${p.classIcon}
-            </div>
-            <div class="font-extrabold text-sm text-white mt-1 truncate max-w-[90px]">${p.name}</div>
-            <div class="text-[10px] text-amber-300 font-bold">${p.points} pts</div>
-          </div>
-          <div class="w-20 sm:w-24 ${item.height} ${item.bg} rounded-t-2xl flex flex-col items-center justify-center p-2 shadow-xl border-t border-white/30 text-slate-950 font-black text-xs">
-            <span>${item.label}</span>
-          </div>
-        `;
-        podiumEl.appendChild(col);
-      });
-
-      // Render Complete Ranking List
-      const rankingList = document.getElementById('rankingList');
-      rankingList.innerHTML = '';
-
-      ranking.forEach((p, idx) => {
-        const row = document.createElement('div');
-        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs';
-        row.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="font-black text-slate-400 w-5">#${idx + 1}</span>
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background-color: ${p.color.hex}">
-              ${p.classIcon}
-            </div>
-            <span class="font-bold text-white">${p.name} <span class="text-[10px] text-slate-400">(${p.className})</span></span>
-          </div>
-          <div class="flex items-center gap-3 font-semibold">
-            <span class="text-slate-300">Casa ${p.position}</span>
-            <span class="text-amber-400 font-bold">${p.points} pts</span>
-          </div>
-        `;
-        rankingList.appendChild(row);
-      });
-
-      document.getElementById('modalVictory').classList.remove('hidden');
-    }
-
-    /* RESTART SAME PLAYERS */
-    function restartSamePlayers() {
-      document.getElementById('modalVictory').classList.add('hidden');
-      
-      // Reset scores and position
-      players.forEach(p => {
-        p.position = 0;
-        p.points = 0;
-      });
-
-      currentPlayerIndex = 0;
-      initDecks();
-      updateTurnPanel();
-      
-      document.getElementById('gameLog').innerHTML = `
-        <div class="p-2 rounded bg-slate-900/60 border border-slate-800 text-slate-400 italic">
-          Partida reiniciada com os mesmos jogadores!
-        </div>
-      `;
-    }
-
-    /* CONFIRM RESET GAME */
-    function confirmReset() {
-      if (confirm('Deseja reiniciar o jogo e configurar uma nova partida?')) {
-        openSetupModal();
-      }
-    }
-
-    /* SETUP MODAL & PLAYER COUNT LOGIC */
-    function openSetupModal() {
-      document.getElementById('modalVictory').classList.add('hidden');
-      document.getElementById('modalSetup').classList.remove('hidden');
-      renderPlayerSetupInputs();
-    }
+    // ==========================================
+    // 4. LÓGICA DA INTERFACE DE CONFIGURAÇÃO (LOBBY)
+    // ==========================================
 
     function setPlayerCount(count) {
-      selectedPlayerCount = count;
+      numPlayers = count;
+      const btnContainer = document.getElementById('playerCountButtons');
+      btnContainer.innerHTML = '';
       
-      const countBtns = document.querySelectorAll('.count-btn');
-      countBtns.forEach((btn, idx) => {
-        if (idx + 2 === count) {
-          btn.className = 'count-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm border border-indigo-400 shadow';
-        } else {
-          btn.className = 'count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700';
-        }
-      });
-
-      renderPlayerSetupInputs();
+      for(let i = 2; i <= 6; i++) {
+        const isSelected = i === count;
+        const btnClass = isSelected 
+          ? 'px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm shadow' 
+          : 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-black text-sm border border-slate-700';
+        
+        btnContainer.innerHTML += `<button onclick="setPlayerCount(${i})" class="${btnClass}">${i}</button>`;
+      }
+      renderPlayerInputs();
     }
 
-    function renderPlayerSetupInputs() {
+    function renderPlayerInputs() {
       const container = document.getElementById('playerInputsContainer');
-      container.innerHTML = '';
+      container.innerHTML = ''; 
 
-      for (let i = 0; i < selectedPlayerCount; i++) {
-        const color = COLOR_OPTIONS[i % COLOR_OPTIONS.length];
-        const character = CHARACTERS[i % CHARACTERS.length];
+      const colorOptionsHTML = COLOR_OPTIONS.map(c => `<option value="${c.hex}">${c.name}</option>`).join('');
+      const charOptionsHTML = CHARACTERS.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join('');
 
-        const card = document.createElement('div');
-        card.className = 'p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col gap-3 shadow';
+      for (let i = 1; i <= numPlayers; i++) {
+        const isLeader = i === currentLeaderId;
+        const leaderBadge = isLeader ? `<span class="ml-2 text-[9px] bg-amber-500 text-black px-1.5 py-0.5 rounded-sm"><i class="fa-solid fa-crown"></i> LÍDER</span>` : '';
 
-        card.innerHTML = `
-          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
-            <span class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full" style="background-color: ${color.hex}"></span>
-              Jogador / Equipe ${i + 1}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <!-- Name Input -->
-            <div class="sm:col-span-1">
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome</label>
-              <input type="text" id="pName_${i}" value="Jogador ${i + 1}" maxlength="14" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
+        container.innerHTML += `
+          <div class="p-3 rounded-xl ${isLeader ? 'bg-indigo-900/40 border-indigo-500/50' : 'bg-slate-900/80 border-slate-700'} border flex flex-col sm:flex-row gap-3 relative" id="playerRow_${i}">
+            <div class="flex-1">
+              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center">
+                Jogador ${i} ${leaderBadge}
+              </label>
+              <input type="text" id="p${i}_name" value="Jogador ${i}" maxlength="12" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
             </div>
-
-            <!-- Color Selector -->
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor do Peão</label>
-              <select id="pColor_${i}" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                ${COLOR_OPTIONS.map((c, cIdx) => `
-                  <option value="${c.id}" ${cIdx === i % COLOR_OPTIONS.length ? 'selected' : ''}>${c.name}</option>
-                `).join('')}
+            <div class="flex-1">
+              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor</label>
+              <select id="p${i}_color" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold">
+                ${colorOptionsHTML}
               </select>
             </div>
-
-            <!-- Character Selector -->
-            <div>
+            <div class="flex-1">
               <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
-              <select id="pClass_${i}" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                ${CHARACTERS.map((r, rIdx) => `
-                  <option value="${r.id}" ${rIdx === i % CHARACTERS.length ? 'selected' : ''}>${r.icon} ${r.name} (${r.desc})</option>
-                `).join('')}
+              <select id="p${i}_char" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs font-bold">
+                ${charOptionsHTML}
               </select>
             </div>
           </div>
         `;
-
-        container.appendChild(card);
       }
     }
 
-    /* START GAME INITIALIZER */
+    // ==========================================
+    // 5. INICIAR O JOGO E TRANSIÇÃO DE LÍDER
+    // ==========================================
+
     function startGame() {
-      players = [];
-
-      for (let i = 0; i < selectedPlayerCount; i++) {
-        const nameInput = document.getElementById(`pName_${i}`).value.trim() || `Jogador ${i + 1}`;
-        const colorId = document.getElementById(`pColor_${i}`).value;
-        const charId = document.getElementById(`pClass_${i}`).value;
-
-        const colorObj = COLOR_OPTIONS.find(c => c.id === colorId) || COLOR_OPTIONS[i % COLOR_OPTIONS.length];
-        const charObj = CHARACTERS.find(r => r.id === charId) || CHARACTERS[i % CHARACTERS.length];
-
-        players.push({
-          id: `player_${i}_${Date.now()}`,
-          name: nameInput,
-          color: colorObj,
-          className: charObj.name,
-          classIcon: charObj.icon,
-          position: 0,
-          points: 0
-        });
+      // 1. Define o tamanho do tabuleiro escolhido pelo líder
+      targetSpaces = parseInt(document.getElementById('boardSizeSelect').value);
+      
+      // 2. Salva os dados dos jogadores
+      playersState = [];
+      for (let i = 1; i <= numPlayers; i++) {
+        // Verifica se a linha existe (pode ter sido removida numa simulação de saída)
+        if(document.getElementById(`playerRow_${i}`)) {
+          playersState.push({ 
+            id: i, 
+            name: document.getElementById(`p${i}_name`).value, 
+            color: document.getElementById(`p${i}_color`).value, 
+            char: document.getElementById(`p${i}_char`).value, 
+            isHost: (i === currentLeaderId),
+            position: 0 
+          });
+        }
       }
 
-      currentPlayerIndex = 0;
-      initDecks();
-      updateTurnPanel();
+      // 3. Mistura as perguntas para a nova partida
+      shuffleDecks();
 
+      // 4. Esconde configuração, mostra tabuleiro
       document.getElementById('modalSetup').classList.add('hidden');
-
-      logEvent(`🚀 Partida iniciada com <strong>${players.length} jogadores</strong>!`);
-    }
-
-    /* INITIALIZE DECKS DEEP COPY */
-    function initDecks() {
-      activeDecks = {};
-      Object.keys(QUESTION_DATABASE).forEach(catKey => {
-        activeDecks[catKey] = [...QUESTION_DATABASE[catKey]];
-      });
-    }
-
-    /* RULES MODAL CONTROLS */
-    function openRulesModal() {
-      document.getElementById('modalRules').classList.remove('hidden');
-    }
-
-    function closeRulesModal() {
-      document.getElementById('modalRules').classList.add('hidden');
-    }
-
-    /* WINDOW ONLOAD BOOTSTRAP */
-    window.onload = function() {
-      buildBoardTiles();
-      renderBoard();
-      openSetupModal();
-    };
-  </script>
-</body>
-</html>
-  <!-- FIREBASE MODULE & MULTIPLAYER ONLINE GAME LOGIC -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    /* FIREBASE INITIALIZATION */
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'trilha-do-conhecimento';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-      apiKey: "demo-api-key",
-      authDomain: "demo-app.firebaseapp.com",
-      projectId: "demo-app",
-      storageBucket: "demo-app.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:demo"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let authUser = null;
-    let isOnlineMode = false;
-    let isHost = false;
-    let myPlayerId = null;
-    let currentRoomId = null;
-    let unsubscribeRoomSnapshot = null;
-
-    /* AUTHENTICATION SETUP */
-    async function initAuth() {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          const cred = await signInWithCustomToken(auth, __initial_auth_token);
-          authUser = cred.user;
-        } else {
-          const cred = await signInAnonymously(auth);
-          authUser = cred.user;
-        }
-        myPlayerId = authUser ? authUser.uid : `p_${Math.random().toString(36).substring(2, 9)}`;
-      } catch (err) {
-        console.warn('Firebase auth fallback to generated ID:', err);
-        myPlayerId = `p_${Math.random().toString(36).substring(2, 9)}`;
-      }
-    }
-
-    /* FIRESTORE PATH HELPER (RULE 1) */
-    function getRoomRef(roomId) {
-      return doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId.toUpperCase());
-    }
-
-    /* GAME DATA & CATEGORIES CONSTANTS */
-    const CATEGORIES = {
-      geo: { id: 'geo', name: 'Geografia (Willy)', mascot: 'Willy', color: '#00b4ff', border: 'border-sky-400', bg: 'bg-sky-950/90', text: 'text-sky-300', icon: 'fa-earth-americas', desc: 'Países, capitais, bandeiras, relevo e mapas' },
-      science: { id: 'science', name: 'Ciências (Albert)', mascot: 'Albert', color: '#00e676', border: 'border-emerald-400', bg: 'bg-emerald-950/90', text: 'text-emerald-300', icon: 'fa-flask', desc: 'Biologia, física, química, astronomia e corpo humano' },
-      history: { id: 'history', name: 'História (Tito)', mascot: 'Tito', color: '#ff7000', border: 'border-orange-400', bg: 'bg-orange-950/90', text: 'text-orange-300', icon: 'fa-landmark', desc: 'Fatos históricos, guerras, impérios e personalidades' },
-      arts: { id: 'arts', name: 'Artes (Bonzo)', mascot: 'Bonzo', color: '#ff2a8d', border: 'border-pink-400', bg: 'bg-pink-950/90', text: 'text-pink-300', icon: 'fa-palette', desc: 'Pintura, literatura, música, arquitetura e cinema clássico' },
-      sports: { id: 'sports', name: 'Esportes (Tina)', mascot: 'Tina', color: '#ffcc00', border: 'border-yellow-400', bg: 'bg-yellow-950/90', text: 'text-yellow-300', icon: 'fa-futbol', desc: 'Regras de jogos, Olimpíadas, atletas e campeonatos' },
-      ent: { id: 'ent', name: 'Entretenimento (Pop)', mascot: 'Pop', color: '#ff3355', border: 'border-red-400', bg: 'bg-red-950/90', text: 'text-red-300', icon: 'fa-film', desc: 'Cultura pop, celebridades, TV, videogames e quadrinhos' }
-    };
-
-    const CHARACTERS = [
-      { id: 'tito', name: 'Tito', desc: 'Globo terrestre', icon: '🌐' },
-      { id: 'albert', name: 'Albert', desc: 'Tubo de ensaio cientista', icon: '🧪' },
-      { id: 'hector', name: 'Hector', desc: 'Armadura medieval corajosa', icon: '🛡️' },
-      { id: 'tina', name: 'Tina', desc: 'Pincel artista', icon: '🖌️' },
-      { id: 'bonzo', name: 'Bonzo', desc: 'Haltere fortão', icon: '🏋️' },
-      { id: 'pop', name: 'Pop', desc: 'Balde de pipoca divertido', icon: '🍿' }
-    ];
-
-    const COLOR_OPTIONS = [
-      { id: 'cyan', hex: '#00e5ff', name: 'Ciano Neon', bg: 'bg-cyan-400' },
-      { id: 'gold', hex: '#ffcc00', name: 'Ouro Brilhante', bg: 'bg-yellow-400' },
-      { id: 'emerald', hex: '#00e676', name: 'Esmeralda Neon', bg: 'bg-emerald-400' },
-      { id: 'pink', hex: '#ff2a8d', name: 'Rosa Choque', bg: 'bg-pink-500' },
-      { id: 'violet', hex: '#d500f9', name: 'Violeta Elétrico', bg: 'bg-purple-500' },
-      { id: 'orange', hex: '#ff7000', name: 'Laranja Solar', bg: 'bg-orange-500' }
-    ];
-
-    /* QUESTION DECK DATABASE */
-    const QUESTION_DATABASE = {
-      science: [
-        { level: 'Fácil', points: 100, text: 'Qual é a fórmula química da água salgada e pura fundamental?', options: ['CO2', 'H2O', 'NaCl', 'O2'], correct: 1, explanation: 'H2O é constituído por dois átomos de hidrogênio e um de oxigênio.' },
-        { level: 'Fácil', points: 100, text: 'Qual órgão humano é responsável por bombear o sangue?', options: ['Fígado', 'Pulmão', 'Coração', 'Rim'], correct: 2, explanation: 'O coração funciona como bomba propulsora de sangue no organismo.' },
-        { level: 'Médio', points: 200, text: 'Qual é a velocidade aproximada da luz no vácuo?', options: ['300.000 km/s', '150.000 km/s', '1.000.000 km/s', '30.000 km/s'], correct: 0, explanation: 'A velocidade da luz no vácuo é de cerca de 299.792 km por segundo.' },
-        { level: 'Médio', points: 200, text: 'Qual gás é mais abundante na atmosfera terrestre?', options: ['Oxigênio', 'Gás Carbônico', 'Nitrogênio', 'Hidrogênio'], correct: 2, explanation: 'O Nitrogênio (N2) compõe aproximadamente 78% do ar atmosférico.' },
-        { level: 'Difícil', points: 300, text: 'Qual partícula subatômica possui carga elétrica positiva?', options: ['Elétron', 'Próton', 'Nêutron', 'Fóton'], correct: 1, explanation: 'Os prótons possuem carga positiva no núcleo atômico.' },
-        { level: 'Difícil', points: 300, text: 'Quem formulou a teoria da relatividade geral?', options: ['Isaac Newton', 'Albert Einstein', 'Galileu Galilei', 'Niels Bohr'], correct: 1, explanation: 'Albert Einstein publicou a Teoria da Relatividade Geral em 1915.' }
-      ],
-      arts: [
-        { level: 'Fácil', points: 100, text: 'Quem pintou a famosa obra Mona Lisa?', options: ['Vincent van Gogh', 'Leonardo da Vinci', 'Pablo Picasso', 'Claude Monet'], correct: 1, explanation: 'Leonardo da Vinci pintou a Mona Lisa entre 1503 e 1506.' },
-        { level: 'Fácil', points: 100, text: 'Qual artista holandês pintou "A Noite Estrelada"?', options: ['Rembrandt', 'Van Gogh', 'Vermeer', 'Mondrian'], correct: 1, explanation: 'Vincent van Gogh pintou a obra no asilo em Saint-Rémy.' },
-        { level: 'Médio', points: 200, text: 'Qual movimento artístico é famoso pelas esculturas do mestre Aleijadinho no Brasil?', options: ['Barroco', 'Modernismo', 'Neoclassicismo', 'Impressionismo'], correct: 0, explanation: 'Aleijadinho foi o maior expoente do Barroco mineiro.' },
-        { level: 'Médio', points: 200, text: 'Qual pintor é o maior expoente do Cubismo mundial?', options: ['Salvador Dalí', 'Pablo Picasso', 'Edvard Munch', 'Gustav Klimt'], correct: 1, explanation: 'Picasso co-fundou o movimento cubista no início do século XX.' },
-        { level: 'Difícil', points: 300, text: 'Quem esculpiu a obra estatuária David e o teto da Capela Sistina?', options: ['Donatello', 'Michelangelo', 'Rafael', 'Bernini'], correct: 1, explanation: 'Michelangelo Buonarroti é o mestre renascentista responsável.' },
-        { level: 'Difícil', points: 300, text: 'Em que ano ocorreu a influente Semana de Arte Moderna no Brasil?', options: ['1922', '1908', '1930', '1917'], correct: 0, explanation: 'Aconteceu em fevereiro de 1922 no Theatro Municipal de São Paulo.' }
-      ],
-      sports: [
-        { level: 'Fácil', points: 100, text: 'Quantos jogadores de cada time entram em campo numa partida de futebol tradicional?', options: ['10', '11', '12', '9'], correct: 1, explanation: 'Cada equipe entra com 11 titulares incluindo o goleiro.' },
-        { level: 'Fácil', points: 100, text: 'Em qual esporte se usa o termo "Home Run"?', options: ['Basquete', 'Beisebol', 'Tênis', 'Golf'], correct: 1, explanation: 'Home Run ocorre quando a rebatedor rebete para fora do campo de beisebol.' },
-        { level: 'Médio', points: 200, text: 'Quantos títulos da Copa do Mundo FIFA a Seleção Brasileira masculina conquistou?', options: ['4', '5', '6', '3'], correct: 1, explanation: 'O Brasil é pentacampeão (1958, 1962, 1970, 1994, 2002).' },
-        { level: 'Médio', points: 200, text: 'Qual nadador é o maior medalhista olímpico da história mundial?', options: ['Michael Phelps', 'Usain Bolt', 'Ian Thorpe', 'César Cielo'], correct: 0, explanation: 'Michael Phelps acumulou 28 medalhas olímpicas na carreira.' },
-        { level: 'Difícil', points: 300, text: 'Onde foram realizados os primeiros Jogos Olímpicos da era moderna em 1896?', options: ['Paris', 'Atenas', 'Londres', 'Roma'], correct: 1, explanation: 'Atenas, na Grécia, sediou a abertura dos Jogos de Verão em 1896.' },
-        { level: 'Difícil', points: 300, text: 'Quantos minutos dura cada quarto de partida na NBA de basquete?', options: ['10 min', '12 min', '15 min', '20 min'], correct: 1, explanation: 'A NBA disputa 4 quartos de 12 minutos cada.' }
-      ],
-      geo: [
-        { level: 'Fácil', points: 100, text: 'Qual é o maior país do mundo em extensão territorial?', options: ['Canadá', 'China', 'Rússia', 'Estados Unidos'], correct: 2, explanation: 'A Rússia possui mais de 17 milhões de quilômetros quadrados.' },
-        { level: 'Fácil', points: 100, text: 'Qual é a capital oficial da França?', options: ['Madri', 'Roma', 'Londres', 'Paris'], correct: 3, explanation: 'Paris é a capital e cidade mais populosa da França.' },
-        { level: 'Médio', points: 200, text: 'Qual é o oceano mais extenso do planeta Terra?', options: ['Atlântico', 'Índico', 'Pacífico', 'Glacial Ártico'], correct: 2, explanation: 'O Oceano Pacífico cobre mais de 30% da superfície terrestre.' },
-        { level: 'Médio', points: 200, text: 'Qual cordilheira de montanhas abriga o Pico Everest?', options: ['Andes', 'Himalaia', 'Alpes', 'Rochosas'], correct: 1, explanation: 'O Everest está situado na Cordilheira do Himalaia, na fronteira Nepal-China.' },
-        { level: 'Difícil', points: 300, text: 'Qual é o país mais populoso do continente africano?', options: ['Egito', 'Nigéria', 'África do Sul', 'Etiópia'], correct: 1, explanation: 'A Nigéria conta com mais de 220 milhões de habitantes.' },
-        { level: 'Difícil', points: 300, text: 'Qual o rio mais extenso em volume de água e comprimento do mundo?', options: ['Rio Nilo', 'Rio Amazonas', 'Rio Mississippi', 'Rio Yangtzé'], correct: 1, explanation: 'O Rio Amazonas supera em volume hídrico e extensão.' }
-      ],
-      ent: [
-        { level: 'Fácil', points: 100, text: 'Qual personagem dos desenhos ama comer espinafre para ganhar força?', options: ['Pica-Pau', 'Popeye', 'Bob Esponja', 'Mickey'], correct: 1, explanation: 'Popeye o marinheiro ganha superforça com espinafre.' },
-        { level: 'Fácil', points: 100, text: 'Qual franquia de filmes tem os personagens Luke Skywalker e Darth Vader?', options: ['Star Trek', 'Star Wars', 'Harry Potter', 'Senhor dos Anéis'], correct: 1, explanation: 'Star Wars é a aclamada saga espacial criada por George Lucas.' },
-        { level: 'Médio', points: 200, text: 'Qual filme ganhou o Oscar de Melhor Filme em 2020, fazendo história como primeiro em língua estrangeira?', options: ['Parasita', '1917', 'Coringa', 'O Irlandês'], correct: 0, explanation: 'Parasita (Coreia do Sul) venceu o Oscar principal de 2020.' },
-        { level: 'Médio', points: 200, text: 'Qual o nome do bruxo protagonista da famosa saga escrita por J.K. Rowling?', options: ['Percy Jackson', 'Harry Potter', 'Gandalf', 'Eragon'], correct: 1, explanation: 'Harry Potter é o jovem bruxo de Hogwarts.' },
-        { level: 'Difícil', points: 300, text: 'Qual é o console de videogame mais vendido de todos os tempos?', options: ['Nintendo DS', 'PlayStation 2', 'Game Boy', 'Nintendo Switch'], correct: 1, explanation: 'O PlayStation 2 superou a marca de 155 milhões de unidades.' },
-        { level: 'Difícil', points: 300, text: 'Quem dirigiu os filmes "A Origem", "Interestelar" e "Oppenheimer"?', options: ['Steven Spielberg', 'Christopher Nolan', 'Quentin Tarantino', 'Denis Villeneuve'], correct: 1, explanation: 'Christopher Nolan dirigiu essas aclamadas produções.' }
-      ],
-      history: [
-        { level: 'Fácil', points: 100, text: 'Em que ano o homem pisou pela primeira vez na Lua?', options: ['1965', '1969', '1972', '1959'], correct: 1, explanation: 'A missão Apollo 11 pousou na Lua em julho de 1969.' },
-        { level: 'Fácil', points: 100, text: 'Quem proclamou a Independência do Brasil às margens do Ipiranga em 1822?', options: ['Dom Pedro I', 'Dom Pedro II', 'Tiradentes', 'Marechal Deodoro'], correct: 0, explanation: 'Dom Pedro I declarou a independência do Reino de Portugal em 1822.' },
-        { level: 'Médio', points: 200, text: 'Qual civilização antiga construiu as grandes Pirâmides de Gizé?', options: ['Grega', 'Romana', 'Egípcia', 'Mesopotâmica'], correct: 2, explanation: 'O Egito Antigo ergueu as pirâmides como tumbas faraônicas.' },
-        { level: 'Médio', points: 200, text: 'Em que ano teve início a Segunda Guerra Mundial na Europa?', options: ['1914', '1939', '1945', '1918'], correct: 1, explanation: 'A Segunda Guerra começou em setembro de 1939 com a invasão da Polônia.' },
-        { level: 'Difícil', points: 300, text: 'Quem foi o primeiro presidente da República dos Estados Unidos do Brasil em 1889?', options: ['Getúlio Vargas', 'Marechal Deodoro da Fonseca', 'Floriano Peixoto', 'Juscelino Kubitschek'], correct: 1, explanation: 'Deodoro da Fonseca proclamou a República e assumiu o governo provisório.' },
-        { level: 'Difícil', points: 300, text: 'Em que século ocorreu a Queda de Constantinopla marcando o fim do Império Bizantino?', options: ['Século XIII', 'Século XV (1453)', 'Século XIV', 'Século XVI'], correct: 1, explanation: 'Ocorreu em 1453 (Século XV) tomada pelos turcos otomanos.' }
-      ]
-    };
-
-    /* AUDIO SYNTHESIZER */
-    let soundEnabled = true;
-    let audioCtx = null;
-
-    function getAudioCtx() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
-
-    window.toggleSound = function() {
-      soundEnabled = !soundEnabled;
-      const btnIcon = document.getElementById('soundIcon');
-      const btnText = document.querySelector('#btnSound span');
-      if (soundEnabled) {
-        btnIcon.className = 'fa-solid fa-volume-high text-emerald-400';
-        if(btnText) btnText.textContent = 'Som: ON';
-        playBeep(523.25, 0.1);
-      } else {
-        btnIcon.className = 'fa-solid fa-volume-xmark text-rose-400';
-        if(btnText) btnText.textContent = 'Som: OFF';
-      }
-    };
-
-    function playBeep(freq, duration, type = 'sine') {
-      if (!soundEnabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function playDiceSound() {
-      if (!soundEnabled) return;
-      for(let i=0; i<6; i++) {
-        setTimeout(() => {
-          playBeep(200 + Math.random()*400, 0.05, 'triangle');
-        }, i * 60);
-      }
-    }
-
-    function playSuccessSound() {
-      if (!soundEnabled) return;
-      [440, 554.37, 659.25, 880].forEach((freq, idx) => {
-        setTimeout(() => playBeep(freq, 0.15, 'sine'), idx * 90);
-      });
-    }
-
-    function playWrongSound() {
-      if (!soundEnabled) return;
-      [300, 250, 200].forEach((freq, idx) => {
-        setTimeout(() => playBeep(freq, 0.2, 'sawtooth'), idx * 100);
-      });
-    }
-
-    /* GAME STATE VARIABLES */
-    let selectedPlayerCount = 2;
-    let players = [];
-    let currentPlayerIndex = 0;
-    let activeDecks = {};
-    let boardTiles = [];
-    let currentQuestion = null;
-    let questionTimer = null;
-    let timerSecondsLeft = 25;
-    let isRolling = false;
-
-    /* BUILD BOARD TILES */
-    function buildBoardTiles() {
-      boardTiles = [];
-      const keys = Object.keys(CATEGORIES);
-      boardTiles.push({ id: 0, category: null, name: 'Início', type: 'start' });
-      for (let i = 1; i < 50; i++) {
-        const catKey = keys[(i - 1) % keys.length];
-        boardTiles.push({ id: i, category: CATEGORIES[catKey], type: 'normal' });
-      }
-      boardTiles.push({ id: 50, category: null, name: 'Chegada 🏆', type: 'finish' });
-    }
-
-    /* RENDER BOARD GRID */
-    function renderBoard() {
-      const gridEl = document.getElementById('boardGrid');
-      gridEl.innerHTML = '';
-
-      boardTiles.forEach((tile) => {
-        const tileDiv = document.createElement('div');
-        tileDiv.id = `tile-${tile.id}`;
-        tileDiv.className = `relative flex flex-col items-center justify-between p-2 rounded-2xl min-h-[78px] transition-all duration-300 border tile-shadow select-none hover:scale-105 hover:z-10`;
-
-        if (tile.type === 'start') {
-          tileDiv.className += ' bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-900 border-indigo-400 text-indigo-100 shadow-lg shadow-indigo-500/30';
-        } else if (tile.type === 'finish') {
-          tileDiv.className += ' bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 border-2 border-white text-slate-950 font-black animate-glow-pulse';
-        } else {
-          const cat = tile.category;
-          tileDiv.style.backgroundColor = `${cat.color}28`;
-          tileDiv.style.borderColor = `${cat.color}bb`;
-          tileDiv.style.boxShadow = `0 4px 15px ${cat.color}30, inset 0 1px 3px rgba(255, 255, 255, 0.3)`;
-        }
-
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'w-full flex items-center justify-between text-[11px] font-black opacity-100';
-        
-        const numSpan = document.createElement('span');
-        numSpan.className = 'px-1.5 py-0.5 rounded-full bg-slate-950/80 text-white border border-white/20 shadow-sm';
-        numSpan.textContent = tile.id;
-        headerDiv.appendChild(numSpan);
-
-        if (tile.category) {
-          const catIcon = document.createElement('i');
-          catIcon.className = `fa-solid ${tile.category.icon} text-sm drop-shadow-[0_0_6px_currentColor]`;
-          catIcon.style.color = tile.category.color;
-          headerDiv.appendChild(catIcon);
-        } else if (tile.type === 'start') {
-          headerDiv.innerHTML += '<i class="fa-solid fa-flag-checkered text-indigo-300"></i>';
-        } else if (tile.type === 'finish') {
-          headerDiv.innerHTML += '<i class="fa-solid fa-trophy text-slate-950"></i>';
-        }
-
-        tileDiv.appendChild(headerDiv);
-
-        const centerDiv = document.createElement('div');
-        centerDiv.className = 'text-center my-0.5';
-        if (tile.type === 'start') {
-          centerDiv.innerHTML = '<span class="text-[10px] font-black uppercase tracking-wider text-indigo-200">Início</span>';
-        } else if (tile.type === 'finish') {
-          centerDiv.innerHTML = '<span class="text-xs font-black uppercase tracking-wider text-slate-950 drop-shadow">FIM 🏆</span>';
-        }
-        tileDiv.appendChild(centerDiv);
-
-        const pawnsDiv = document.createElement('div');
-        pawnsDiv.id = `tile-pawns-${tile.id}`;
-        pawnsDiv.className = 'w-full flex flex-wrap items-center justify-center gap-1 min-h-[22px]';
-        tileDiv.appendChild(pawnsDiv);
-
-        gridEl.appendChild(tileDiv);
-      });
-
-      updatePawnsOnBoard();
-    }
-
-    /* UPDATE PAWNS ON BOARD */
-    function updatePawnsOnBoard() {
-      for (let i = 0; i <= 50; i++) {
-        const container = document.getElementById(`tile-pawns-${i}`);
-        if (container) container.innerHTML = '';
-      }
-
-      players.forEach((player) => {
-        const container = document.getElementById(`tile-pawns-${player.position}`);
-        if (container) {
-          const pawn = document.createElement('div');
-          pawn.className = `w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-lg transition-all duration-300 transform hover:scale-125 cursor-pointer border border-white/40 pawn-glow`;
-          pawn.style.backgroundColor = player.color.hex;
-          pawn.style.color = '#000';
-          pawn.title = `${player.name} - Casa ${player.position}`;
-          pawn.innerHTML = `<span class="drop-shadow">${player.classIcon}</span>`;
-
-          if (players[currentPlayerIndex] && players[currentPlayerIndex].id === player.id) {
-            pawn.classList.add('ring-2', 'ring-white', 'scale-110', 'animate-bounce');
-          }
-
-          container.appendChild(pawn);
-        }
-      });
-    }
-
-    /* RENDER LIVE LEADERBOARD HEADER BAR */
-    function renderLiveLeaderboard() {
-      const container = document.getElementById('liveLeaderboard');
-      container.innerHTML = '';
-
-      const sorted = [...players].sort((a,b) => b.position - a.position || b.points - a.points);
-
-      sorted.forEach((p) => {
-        const isTurn = players[currentPlayerIndex] && players[currentPlayerIndex].id === p.id;
-        const isMe = p.id === myPlayerId;
-        const card = document.createElement('div');
-        card.className = `px-3 py-1.5 rounded-xl border text-xs flex items-center gap-2.5 shrink-0 transition-all ${
-          isTurn 
-            ? 'bg-indigo-900/80 border-indigo-400 ring-1 ring-indigo-400 text-white shadow-md' 
-            : 'bg-slate-900/60 border-slate-800 text-slate-300'
-        }`;
-
-        card.innerHTML = `
-          <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 font-bold" style="background-color: ${p.color.hex}; color: #000">
-            ${p.classIcon}
-          </div>
-          <div class="flex flex-col">
-            <div class="font-extrabold flex items-center gap-1.5">
-              <span>${p.name} ${isMe ? '<span class="text-[9px] text-amber-300">(Você)</span>' : ''}</span>
-              ${isTurn ? '<span class="text-[9px] px-1 py-0.2 rounded bg-emerald-500 text-slate-950 font-black uppercase">Vez</span>' : ''}
-            </div>
-            <div class="text-[10px] text-slate-400 flex items-center gap-2">
-              <span>Casa <strong class="text-amber-300">${p.position}</strong></span>
-              <span>•</span>
-              <span><strong class="text-emerald-300">${p.points}</strong> pts</span>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    /* UPDATE TURN CONTROL PANEL */
-    function updateTurnPanel() {
-      if (!players.length) return;
-      const player = players[currentPlayerIndex];
-      const turnAvatar = document.getElementById('turnAvatar');
-      const turnPlayerName = document.getElementById('turnPlayerName');
-      const turnPos = document.getElementById('turnPos');
-      const turnPts = document.getElementById('turnPts');
-      const turnBadge = document.getElementById('turnBadge');
-      const btnRoll = document.getElementById('btnRollDice');
-
-      turnAvatar.style.backgroundColor = player.color.hex;
-      turnAvatar.textContent = player.classIcon;
-      turnPlayerName.textContent = player.name;
-      turnPos.textContent = player.position;
-      turnPts.textContent = player.points;
-
-      turnBadge.style.borderColor = player.color.hex;
-
-      // Disable Roll button if it's not my turn in Online Mode
-      const isMyTurn = !isOnlineMode || (player.id === myPlayerId);
-      if (isMyTurn && !isRolling) {
-        btnRoll.disabled = false;
-        btnRoll.classList.remove('opacity-50', 'cursor-not-allowed');
-      } else {
-        btnRoll.disabled = true;
-        btnRoll.classList.add('opacity-50', 'cursor-not-allowed');
-      }
-
-      renderLiveLeaderboard();
-      updatePawnsOnBoard();
-      renderDeckCounters();
-    }
-
-    /* RENDER DECK COUNTERS IN SIDEBAR */
-    function renderDeckCounters() {
-      const container = document.getElementById('deckCounters');
-      container.innerHTML = '';
-
-      Object.keys(CATEGORIES).forEach(catKey => {
-        const cat = CATEGORIES[catKey];
-        const count = activeDecks[catKey] ? activeDecks[catKey].length : 0;
-
-        const box = document.createElement('div');
-        box.className = `p-2 rounded-xl border flex items-center justify-between ${cat.bg} ${cat.border} text-slate-200`;
-        box.innerHTML = `
-          <div class="flex items-center gap-1.5 truncate">
-            <i class="fa-solid ${cat.icon} ${cat.text}"></i>
-            <span class="font-semibold truncate text-[11px]">${cat.name}</span>
-          </div>
-          <span class="font-black px-1.5 py-0.5 rounded bg-slate-950/80 text-[10px] text-amber-300 ml-1">
-            ${count}
-          </span>
-        `;
-        container.appendChild(box);
-      });
-    }
-
-    /* LOG EVENT TO ACTIVITY FEED */
-    function logEvent(msg) {
-      const logEl = document.getElementById('gameLog');
-      const entry = document.createElement('div');
-      entry.className = 'p-1.5 rounded bg-slate-900/80 border border-slate-800 text-[11px] leading-snug';
-      entry.innerHTML = msg;
-      logEl.prepend(entry);
-    }
-
-    /* DICE ROLL LOGIC */
-    window.handleRollDice = async function() {
-      if (isRolling) return;
+      document.getElementById('gameBoardArea').classList.remove('hidden');
+      document.getElementById('boardGoalText').innerText = `O primeiro a chegar na casa ${targetSpaces} vence!`;
       
-      const activePlayer = players[currentPlayerIndex];
-      if (isOnlineMode && activePlayer.id !== myPlayerId) {
-        return; // Guard against non-turn roll clicks
-      }
-
-      isRolling = true;
-      getAudioCtx();
-
-      const btnRoll = document.getElementById('btnRollDice');
-      btnRoll.disabled = true;
-      btnRoll.classList.add('opacity-50', 'cursor-not-allowed');
-
-      playDiceSound();
-
-      const diceVisual = document.getElementById('diceVisual');
-      const diceResultText = document.getElementById('diceResultText');
-
-      diceResultText.textContent = 'Rolando o dado...';
-      diceVisual.classList.add('animate-spin');
-
-      setTimeout(async () => {
-        diceVisual.classList.remove('animate-spin');
-        const rolledValue = Math.floor(Math.random() * 6) + 1;
-
-        const diceEmojis = ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-        diceVisual.textContent = diceEmojis[rolledValue];
-        diceResultText.textContent = `Tirou o número ${rolledValue}!`;
-
-        logEvent(`🎲 <strong>${activePlayer.name}</strong> rolou <strong>${rolledValue}</strong> no dado.`);
-
-        if (isOnlineMode) {
-          // Sync rolled dice result to Firestore
-          try {
-            await updateDoc(getRoomRef(currentRoomId), {
-              lastDiceRoll: rolledValue,
-              lastActionMsg: `🎲 ${activePlayer.name} rolou ${rolledValue} no dado.`
-            });
-          } catch(e) { console.error('Error syncing dice roll:', e); }
-        }
-
-        setTimeout(() => {
-          advancePlayer(activePlayer, rolledValue);
-        }, 600);
-
-      }, 1000);
-    };
-
-    /* ADVANCE PLAYER LOGIC */
-    function advancePlayer(player, steps) {
-      const startPos = player.position;
-      let targetPos = startPos + steps;
-      if (targetPos > 50) targetPos = 50;
-
-      let currentStep = startPos;
-      const stepInterval = setInterval(() => {
-        if (currentStep < targetPos) {
-          currentStep++;
-          player.position = currentStep;
-          playBeep(400 + currentStep * 10, 0.08, 'sine');
-          updatePawnsOnBoard();
-        } else {
-          clearInterval(stepInterval);
-
-          if (player.position === 50) {
-            handleVictory(player);
-            return;
-          }
-
-          setTimeout(() => {
-            triggerSpaceEvent(player);
-          }, 400);
-        }
-      }, 250);
+      updateBoardUI();
     }
 
-    /* TRIGGER SPACE EVENT */
-    function triggerSpaceEvent(player) {
-      const currentTile = boardTiles[player.position];
-      if (!currentTile.category) {
-        logEvent(`📌 <strong>${player.name}</strong> parou no Início.`);
-        endTurn();
-        return;
-      }
-      const cat = currentTile.category;
-      drawQuestionCard(cat.id, player);
+    // Atualiza visualmente quem está no jogo
+    function updateBoardUI() {
+      const list = document.getElementById('activePlayersList');
+      list.innerHTML = '';
+      playersState.forEach(p => {
+        list.innerHTML += `
+          <div class="flex flex-col items-center p-3 bg-slate-800 rounded-xl border-2" style="border-color: ${p.color}">
+            <span class="text-3xl mb-1">${p.char.split(' ')[0]}</span>
+            <span class="text-xs font-bold">${p.name} ${p.isHost ? '👑' : ''}</span>
+            <span class="text-xs text-slate-400">Casa: ${p.position}</span>
+          </div>
+        `;
+      });
     }
 
-    /* DRAW QUESTION CARD */
-    function drawQuestionCard(catKey, player) {
-      let deck = activeDecks[catKey];
-      if (!deck || deck.length === 0) {
-        logEvent(`⚠️ O monte de <strong>${CATEGORIES[catKey].name}</strong> foi reabastecido!`);
-        activeDecks[catKey] = [...QUESTION_DATABASE[catKey]];
-        deck = activeDecks[catKey];
-      }
-
-      const cardIndex = Math.floor(Math.random() * deck.length);
-      currentQuestion = deck.splice(cardIndex, 1)[0];
-
-      showQuestionModal(catKey, player, currentQuestion, deck.length);
-    }
-
-    /* SHOW QUESTION MODAL */
-    function showQuestionModal(catKey, player, q, deckRemainingCount) {
-      const cat = CATEGORIES[catKey];
-      const modal = document.getElementById('modalQuestion');
+    // Simulador de Migração de Host (Líder sai da sala)
+    function simulateLeaderLeave() {
+      if(numPlayers <= 1) return alert("Não há jogadores suficientes para passar a liderança.");
       
-      const qCatBadge = document.getElementById('qCatBadge');
-      qCatBadge.style.backgroundColor = cat.color;
-      qCatBadge.style.color = '#000';
-
-      document.getElementById('qCatIcon').className = `fa-solid ${cat.icon}`;
-      document.getElementById('qCatName').textContent = cat.name;
-
-      document.getElementById('qDiffBadge').textContent = `Dificuldade: ${q.level}`;
-      document.getElementById('qPointsBadge').textContent = `+${q.points} pts`;
-      document.getElementById('qDeckRemaining').textContent = `Restam ${deckRemainingCount} cartas no monte`;
-
-      document.getElementById('qText').textContent = q.text;
-
-      const feedbackEl = document.getElementById('qFeedback');
-      feedbackEl.className = 'hidden p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all';
-      feedbackEl.innerHTML = '';
-
-      document.getElementById('btnNextTurn').classList.add('hidden');
-
-      const optionsEl = document.getElementById('qOptions');
-      optionsEl.innerHTML = '';
-
-      const isMyTurn = !isOnlineMode || (player.id === myPlayerId);
-
-      q.options.forEach((optText, idx) => {
-        const optBtn = document.createElement('button');
-        optBtn.className = 'opt-btn w-full p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-left font-semibold text-sm transition flex items-center justify-between group';
-        if (!isMyTurn) {
-          optBtn.disabled = true;
-          optBtn.classList.add('opacity-70', 'cursor-not-allowed');
-        } else {
-          optBtn.onclick = () => handleAnswerOption(idx, player, q);
-        }
-        optBtn.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center font-bold text-xs text-amber-400 group-hover:border-amber-400">
-              ${String.fromCharCode(65 + idx)}
-            </span>
-            <span>${optText}</span>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-amber-400"></i>
-        `;
-        optionsEl.appendChild(optBtn);
-      });
-
-      startQuestionTimer(player, q);
-      modal.classList.remove('hidden');
-    }
-
-    /* QUESTION TIMER */
-    function startQuestionTimer(player, q) {
-      clearInterval(questionTimer);
-      timerSecondsLeft = 25;
-      const timerBar = document.getElementById('qTimerBar');
-      timerBar.style.width = '100%';
-
-      questionTimer = setInterval(() => {
-        timerSecondsLeft--;
-        const percentage = (timerSecondsLeft / 25) * 100;
-        timerBar.style.width = `${percentage}%`;
-
-        if (timerSecondsLeft <= 0) {
-          clearInterval(questionTimer);
-          handleTimeOut(player, q);
-        }
-      }, 1000);
-    }
-
-    /* ANSWER OPTION LOGIC */
-    async function handleAnswerOption(selectedIdx, player, q) {
-      clearInterval(questionTimer);
-
-      const optBtns = document.querySelectorAll('.opt-btn');
-      optBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('cursor-not-allowed', 'opacity-60');
-      });
-
-      const feedbackEl = document.getElementById('qFeedback');
-      const isCorrect = selectedIdx === q.correct;
-
-      if (isCorrect) {
-        playSuccessSound();
-        player.points += q.points;
-        const bonusMove = q.level === 'Fácil' ? 1 : (q.level === 'Médio' ? 1 : 2);
-        player.position = Math.min(50, player.position + bonusMove);
-
-        feedbackEl.className = 'p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-sm font-semibold text-left mb-4 shadow';
-        feedbackEl.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-emerald-400 text-base mb-1">
-            <i class="fa-solid fa-circle-check"></i> Resposta Correta!
-          </div>
-          <p>Você ganhou <strong>+${q.points} pontos</strong> e avançou mais <strong>+${bonusMove} casa(s)</strong> bônus!</p>
-          <p class="text-xs text-emerald-300/80 mt-2 italic">${q.explanation}</p>
-        `;
-
-        logEvent(`✅ <strong>${player.name}</strong> acertou a pergunta (+${q.points} pts, +${bonusMove} casa bônus).`);
-      } else {
-        playWrongSound();
-        if (player.position > 0) player.position = Math.max(0, player.position - 1);
-
-        feedbackEl.className = 'p-4 rounded-2xl bg-rose-950/90 border border-rose-500 text-rose-200 text-sm font-semibold text-left mb-4 shadow';
-        feedbackEl.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-rose-400 text-base mb-1">
-            <i class="fa-solid fa-circle-xmark"></i> Resposta Incorreta!
-          </div>
-          <p>A resposta certa era: <strong>${q.options[q.correct]}</strong>.</p>
-          <p class="text-xs text-rose-300/80 mt-1">Recuou 1 casa pelo deslize.</p>
-        `;
-
-        logEvent(`❌ <strong>${player.name}</strong> errou a pergunta de ${q.level}.`);
-      }
-
-      feedbackEl.classList.remove('hidden');
-      document.getElementById('btnNextTurn').classList.remove('hidden');
+      alert(`O líder (Jogador ${currentLeaderId}) desconectou da sala!`);
       
-      updatePawnsOnBoard();
-      renderLiveLeaderboard();
-
-      if (isOnlineMode) {
-        syncGameStateToFirestore();
+      // Remove o líder atual do HTML
+      const leaderRow = document.getElementById(`playerRow_${currentLeaderId}`);
+      if(leaderRow) leaderRow.remove();
+      
+      // Acha o próximo jogador disponível para ser líder
+      for(let i = 1; i <= 6; i++) {
+        if(i !== currentLeaderId && document.getElementById(`playerRow_${i}`)) {
+          currentLeaderId = i;
+          alert(`Liderança transferida! Jogador ${i} agora é o líder da sala.`);
+          renderPlayerInputs(); // Re-renderiza para mostrar a coroa no novo líder
+          break;
+        }
       }
     }
 
-    /* TIMEOUT LOGIC */
-    function handleTimeOut(player, q) {
-      playWrongSound();
-      const optBtns = document.querySelectorAll('.opt-btn');
-      optBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('cursor-not-allowed', 'opacity-60');
-      });
+    // ==========================================
+    // 6. PUXAR PERGUNTAS (SEM REPETIR)
+    // ==========================================
+    
+    function drawRandomQuestion() {
+      // Escolhe uma categoria aleatória
+      const categories = Object.keys(QUESTION_DATABASE);
+      const randomCat = categories[Math.floor(Math.random() * categories.length)];
+      const deck = QUESTION_DATABASE[randomCat];
 
-      const feedbackEl = document.getElementById('qFeedback');
-      feedbackEl.className = 'p-4 rounded-2xl bg-amber-950/90 border border-amber-500 text-amber-200 text-sm font-semibold text-left mb-4 shadow';
-      feedbackEl.innerHTML = `
-        <div class="flex items-center gap-2 font-bold text-amber-400 text-base mb-1">
-          <i class="fa-solid fa-hourglass-end"></i> Tempo Esgotado!
-        </div>
-        <p>A resposta correta era: <strong>${q.options[q.correct]}</strong>.</p>
-      `;
-
-      logEvent(`⌛ O tempo de <strong>${player.name}</strong> esgotou na pergunta.`);
-
-      feedbackEl.classList.remove('hidden');
-      document.getElementById('btnNextTurn').classList.remove('hidden');
-
-      if (isOnlineMode) {
-        syncGameStateToFirestore();
-      }
-    }
-
-    /* CLOSE QUESTION MODAL & NEXT TURN */
-    window.closeQuestionModal = function() {
-      clearInterval(questionTimer);
-      document.getElementById('modalQuestion').classList.add('hidden');
-
-      const player = players[currentPlayerIndex];
-      if (player && player.position >= 50) {
-        player.position = 50;
-        handleVictory(player);
+      if (deck.length === 0) {
+        alert("Acabaram as perguntas dessa categoria! Puxe novamente.");
         return;
       }
 
-      endTurn();
-    };
-
-    /* END TURN SWITCHING */
-    function endTurn() {
-      isRolling = false;
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      updateTurnPanel();
-
-      if (isOnlineMode) {
-        syncGameStateToFirestore();
-      }
+      // Tira a primeira pergunta do deck (como já estão embaralhadas, é aleatório e não repete)
+      const question = deck.pop(); 
+      
+      // Mostra a pergunta na tela
+      alert(`CATEGORIA: ${randomCat.toUpperCase()}\n\nPERGUNTA: ${question.text}\n\nRestam ${deck.length} cartas neste monte.`);
     }
 
-    /* HANDLE VICTORY */
-    function handleVictory(winner) {
-      playSuccessSound();
-      try {
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-      } catch (e) {}
-
-      logEvent(`🏆 <strong>${winner.name}</strong> VENCEU A TRILHA DO CONHECIMENTO! 🎉`);
-
-      const ranking = [...players].sort((a,b) => b.position - a.position || b.points - a.points);
-      const podiumEl = document.getElementById('podiumContainer');
-      podiumEl.innerHTML = '';
-
-      const podiumOrder = [];
-      if (ranking[1]) podiumOrder.push({ player: ranking[1], place: 2, height: 'h-32', bg: 'bg-slate-400', label: '2º Lugar' });
-      if (ranking[0]) podiumOrder.push({ player: ranking[0], place: 1, height: 'h-44', bg: 'bg-amber-400 text-slate-950', label: '1º Vencedor 🏆' });
-      if (ranking[2]) podiumOrder.push({ player: ranking[2], place: 3, height: 'h-24', bg: 'bg-amber-700', label: '3º Lugar' });
-
-      podiumOrder.forEach(item => {
-        const p = item.player;
-        const col = document.createElement('div');
-        col.className = 'flex flex-col items-center justify-end';
-
-        col.innerHTML = `
-          <div class="mb-2 text-center">
-            <div class="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-xl shadow-lg border border-white/20" style="background-color: ${p.color.hex}">
-              ${p.classIcon}
-            </div>
-            <div class="font-extrabold text-sm text-white mt-1 truncate max-w-[90px]">${p.name}</div>
-            <div class="text-[10px] text-amber-300 font-bold">${p.points} pts</div>
-          </div>
-          <div class="w-20 sm:w-24 ${item.height} ${item.bg} rounded-t-2xl flex flex-col items-center justify-center p-2 shadow-xl border-t border-white/30 text-slate-950 font-black text-xs">
-            <span>${item.label}</span>
-          </div>
-        `;
-        podiumEl.appendChild(col);
-      });
-
-      const rankingList = document.getElementById('rankingList');
-      rankingList.innerHTML = '';
-
-      ranking.forEach((p, idx) => {
-        const row = document.createElement('div');
-        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs';
-        row.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="font-black text-slate-400 w-5">#${idx + 1}</span>
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background-color: ${p.color.hex}">
-              ${p.classIcon}
-            </div>
-            <span class="font-bold text-white">${p.name}</span>
-          </div>
-          <div class="flex items-center gap-3 font-semibold">
-            <span class="text-slate-300">Casa ${p.position}</span>
-            <span class="text-amber-400 font-bold">${p.points} pts</span>
-          </div>
-        `;
-        rankingList.appendChild(row);
-      });
-
-      document.getElementById('modalVictory').classList.remove('hidden');
-
-      if (isOnlineMode) {
-        updateDoc(getRoomRef(currentRoomId), { status: 'finished' }).catch(()=>{});
-      }
-    }
-
-    /* ONLINE MULTIPLAYER REALTIME FIRESTORE SYNC */
-    async function syncGameStateToFirestore() {
-      if (!isOnlineMode || !currentRoomId) return;
-      try {
-        const roomRef = getRoomRef(currentRoomId);
-        await updateDoc(roomRef, {
-          players: players,
-          currentPlayerIndex: currentPlayerIndex,
-          activeDecks: activeDecks,
-          updatedAt: Date.now()
-        });
-      } catch (e) {
-        console.error('Error updating game state online:', e);
-      }
-    }
-
-    function subscribeToRoomUpdates(roomId) {
-      if (unsubscribeRoomSnapshot) unsubscribeRoomSnapshot();
-      const roomRef = getRoomRef(roomId);
-
-      unsubscribeRoomSnapshot = onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
-
-        // Update Lobby list or Game state based on room status
-        if (data.status === 'waiting') {
-          renderLobbyView(data);
-        } else if (data.status === 'playing') {
-          document.getElementById('modalSetup').classList.add('hidden');
-          
-          if (data.players) players = data.players;
-          if (typeof data.currentPlayerIndex === 'number') currentPlayerIndex = data.currentPlayerIndex;
-          if (data.activeDecks) activeDecks = data.activeDecks;
-
-          updateTurnPanel();
-          updatePawnsOnBoard();
-        }
-      }, (error) => {
-        console.error('Room snapshot error:', error);
-      });
-    }
-
-    function renderLobbyView(data) {
-      const lobbyPlayersList = document.getElementById('lobbyPlayersList');
-      lobbyPlayersList.innerHTML = '';
-
-      const currentPlayers = data.players || [];
-      document.getElementById('lobbyCount').textContent = currentPlayers.length;
-
-      currentPlayers.forEach((p) => {
-        const row = document.createElement('div');
-        row.className = 'p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs';
-        row.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold" style="background-color: ${p.color.hex}; color: #000">
-              ${p.classIcon}
-            </div>
-            <span class="font-extrabold text-white">${p.name} ${p.id === myPlayerId ? '<span class="text-amber-300">(Você)</span>' : ''}</span>
-          </div>
-          ${p.isHost ? '<span class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[10px] uppercase">Líder</span>' : '<span class="text-emerald-400 text-[10px] font-bold">Conectado</span>'}
-        `;
-        lobbyPlayersList.appendChild(row);
-      });
-
-      // Show Start button only for Host
-      const isHostMe = data.hostId === myPlayerId;
-      const hostControlsArea = document.getElementById('hostControlsArea');
-      if (isHostMe) {
-        hostControlsArea.classList.remove('hidden');
-      } else {
-        hostControlsArea.classList.add('hidden');
-      }
-    }
-
-    /* ONLINE ROOM BUTTON HANDLERS */
-    window.handleCreateOnlineRoom = async function() {
-      await initAuth();
-      const pName = document.getElementById('onlinePlayerName').value.trim() || 'Jogador Host';
-      const pColorId = document.getElementById('onlinePlayerColor').value;
-      const pClassId = document.getElementById('onlinePlayerClass').value;
-
-      const pColor = COLOR_OPTIONS.find(c => c.id === pColorId) || COLOR_OPTIONS[0];
-      const pClass = CHARACTERS.find(r => r.id === pClassId) || CHARACTERS[0];
-
-      // Generate random 4-letter room code
-      const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      currentRoomId = roomCode;
-      isHost = true;
-      isOnlineMode = true;
-
-      const myPlayerObj = {
-        id: myPlayerId,
-        name: pName,
-        color: pColor,
-        className: pClass.name,
-        classIcon: pClass.icon,
-        position: 0,
-        points: 0,
-        isHost: true
-      };
-
-      initDecks();
-
-      const newRoomData = {
-        roomId: roomCode,
-        hostId: myPlayerId,
-        status: 'waiting',
-        players: [myPlayerObj],
-        currentPlayerIndex: 0,
-        activeDecks: activeDecks,
-        createdAt: Date.now()
-      };
-
-      try {
-        await setDoc(getRoomRef(roomCode), newRoomData);
-        
-        document.getElementById('onlineRoomActions').classList.add('hidden');
-        document.getElementById('onlineLobbyView').classList.remove('hidden');
-        document.getElementById('lobbyRoomCode').firstChild.textContent = `${roomCode} `;
-        document.getElementById('displayRoomCode').textContent = roomCode;
-        document.getElementById('onlineRoomBadge').classList.remove('hidden');
-
-        subscribeToRoomUpdates(roomCode);
-      } catch (e) {
-        console.error('Error creating room:', e);
-      }
+    // INICIALIZAÇÃO AUTOMÁTICA
+    window.onload = () => {
+      setPlayerCount(2); // Inicia com 2 jogadores por padrão
     };
 
-    window.handleJoinOnlineRoom = async function() {
-      await initAuth();
-      const codeInput = document.getElementById('inputJoinCode').value.trim().toUpperCase();
-      if (!codeInput || codeInput.length < 3) {
-        logEvent('⚠️ Digite um código de sala válido.');
-        return;
-      }
-
-      const pName = document.getElementById('onlinePlayerName').value.trim() || 'Jogador Visitante';
-      const pColorId = document.getElementById('onlinePlayerColor').value;
-      const pClassId = document.getElementById('onlinePlayerClass').value;
-
-      const pColor = COLOR_OPTIONS.find(c => c.id === pColorId) || COLOR_OPTIONS[1];
-      const pClass = CHARACTERS.find(r => r.id === pClassId) || CHARACTERS[1];
-
-      const roomRef = getRoomRef(codeInput);
-      try {
-        const snap = await getDoc(roomRef);
-        if (!snap.exists()) {
-          logEvent('❌ Sala não encontrada. Verifique o código!');
-          return;
-        }
-
-        const roomData = snap.data();
-        if (roomData.players.length >= 6) {
-          logEvent('⚠️ A sala já atingiu o limite de 6 jogadores.');
-          return;
-        }
-
-        currentRoomId = codeInput;
-        isHost = false;
-        isOnlineMode = true;
-
-        const myPlayerObj = {
-          id: myPlayerId,
-          name: pName,
-          color: pColor,
-          className: pClass.name,
-          classIcon: pClass.icon,
-          position: 0,
-          points: 0,
-          isHost: false
-        };
-
-        const updatedPlayers = [...roomData.players.filter(p => p.id !== myPlayerId), myPlayerObj];
-
-        await updateDoc(roomRef, {
-          players: updatedPlayers
-        });
-
-        document.getElementById('onlineRoomActions').classList.add('hidden');
-        document.getElementById('onlineLobbyView').classList.remove('hidden');
-        document.getElementById('lobbyRoomCode').firstChild.textContent = `${codeInput} `;
-        document.getElementById('displayRoomCode').textContent = codeInput;
-        document.getElementById('onlineRoomBadge').classList.remove('hidden');
-
-        subscribeToRoomUpdates(codeInput);
-      } catch(e) {
-        console.error('Error joining room:', e);
-      }
-    };
-
-    window.handleStartOnlineGame = async function() {
-      if (!currentRoomId || !isHost) return;
-      try {
-        await updateDoc(getRoomRef(currentRoomId), {
-          status: 'playing',
-          updatedAt: Date.now()
-        });
-      } catch(e) {
-        console.error('Error starting online game:', e);
-      }
-    };
-
-    window.copyRoomCode = function() {
-      if (!currentRoomId) return;
-      navigator.clipboard.writeText(currentRoomId).then(() => {
-        logEvent(`📋 Código da sala <strong>${currentRoomId}</strong> copiado para a área de transferência!`);
-      }).catch(()=>{});
-    };
-
-    /* MODE SWITCHER (LOCAL VS ONLINE) */
-    window.switchGameMode = function(mode) {
-      const tabLocal = document.getElementById('tabLocalMode');
-      const tabOnline = document.getElementById('tabOnlineMode');
-      const viewLocal = document.getElementById('setupLocalView');
-      const viewOnline = document.getElementById('setupOnlineView');
-
-      if (mode === 'local') {
-        isOnlineMode = false;
-        tabLocal.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition bg-indigo-600 text-white shadow';
-        tabOnline.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition text-slate-400 hover:text-white';
-        viewLocal.classList.remove('hidden');
-        viewOnline.classList.add('hidden');
-      } else {
-        isOnlineMode = true;
-        tabOnline.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition bg-indigo-600 text-white shadow';
-        tabLocal.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition text-slate-400 hover:text-white';
-        viewOnline.classList.remove('hidden');
-        viewLocal.classList.add('hidden');
-      }
-    };
-
-    /* LOCAL GAME START */
-    window.startGameLocal = function() {
-      isOnlineMode = false;
-      players = [];
-
-      for (let i = 0; i < selectedPlayerCount; i++) {
-        const nameInput = document.getElementById(`pName_${i}`).value.trim() || `Jogador ${i + 1}`;
-        const colorId = document.getElementById(`pColor_${i}`).value;
-        const charId = document.getElementById(`pClass_${i}`).value;
-
-        const colorObj = COLOR_OPTIONS.find(c => c.id === colorId) || COLOR_OPTIONS[i % COLOR_OPTIONS.length];
-        const charObj = CHARACTERS.find(r => r.id === charId) || CHARACTERS[i % CHARACTERS.length];
-
-        players.push({
-          id: `player_local_${i}`,
-          name: nameInput,
-          color: colorObj,
-          className: charObj.name,
-          classIcon: charObj.icon,
-          position: 0,
-          points: 0
-        });
-      }
-
-      currentPlayerIndex = 0;
-      initDecks();
-      updateTurnPanel();
-
-      document.getElementById('modalSetup').classList.add('hidden');
-      document.getElementById('onlineRoomBadge').classList.add('hidden');
-
-      logEvent(`🚀 Partida local iniciada com <strong>${players.length} jogadores</strong>!`);
-    };
-
-    window.setPlayerCount = function(count) {
-      selectedPlayerCount = count;
-      const countBtns = document.querySelectorAll('.count-btn');
-      countBtns.forEach((btn, idx) => {
-        if (idx + 2 === count) {
-          btn.className = 'count-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm border border-indigo-400 shadow';
-        } else {
-          btn.className = 'count-btn px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm border border-slate-700';
-        }
-      });
-      renderPlayerSetupInputs();
-    };
-
-    function renderPlayerSetupInputs() {
-      const container = document.getElementById('playerInputsContainer');
-      container.innerHTML = '';
-
-      for (let i = 0; i < selectedPlayerCount; i++) {
-        const color = COLOR_OPTIONS[i % COLOR_OPTIONS.length];
-        const character = CHARACTERS[i % CHARACTERS.length];
-
-        const card = document.createElement('div');
-        card.className = 'p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col gap-3 shadow';
-
-        card.innerHTML = `
-          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
-            <span class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full" style="background-color: ${color.hex}"></span>
-              Jogador / Equipe ${i + 1}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="sm:col-span-1">
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome</label>
-              <input type="text" id="pName_${i}" value="Jogador ${i + 1}" maxlength="14" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-            </div>
-
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor do Peão</label>
-              <select id="pColor_${i}" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                ${COLOR_OPTIONS.map((c, cIdx) => `
-                  <option value="${c.id}" ${cIdx === i % COLOR_OPTIONS.length ? 'selected' : ''}>${c.name}</option>
-                `).join('')}
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
-              <select id="pClass_${i}" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                ${CHARACTERS.map((r, rIdx) => `
-                  <option value="${r.id}" ${rIdx === i % CHARACTERS.length ? 'selected' : ''}>${r.icon} ${r.name}</option>
-                `).join('')}
-              </select>
-            </div>
-          </div>
-        `;
-
-        container.appendChild(card);
-      }
-    }
-
-    function populateOnlineDropdowns() {
-      const colorSelect = document.getElementById('onlinePlayerColor');
-      const classSelect = document.getElementById('onlinePlayerClass');
-
-      colorSelect.innerHTML = COLOR_OPTIONS.map((c, idx) => `
-        <option value="${c.id}" ${idx === 0 ? 'selected' : ''}>${c.name}</option>
-      `).join('');
-
-      classSelect.innerHTML = CHARACTERS.map((r, idx) => `
-        <option value="${r.id}" ${idx === 0 ? 'selected' : ''}>${r.icon} ${r.name}</option>
-      `).join('');
-    }
-
-    function initDecks() {
-      activeDecks = {};
-      Object.keys(QUESTION_DATABASE).forEach(catKey => {
-        activeDecks[catKey] = [...QUESTION_DATABASE[catKey]];
-      });
-    }
-
-    window.openSetupModal = function() {
-      document.getElementById('modalVictory').classList.add('hidden');
-      document.getElementById('modalSetup').classList.remove('hidden');
-      renderPlayerSetupInputs();
-      populateOnlineDropdowns();
-    };
-
-    window.restartSamePlayers = function() {
-      document.getElementById('modalVictory').classList.add('hidden');
-      players.forEach(p => { p.position = 0; p.points = 0; });
-      currentPlayerIndex = 0;
-      initDecks();
-      updateTurnPanel();
-      if (isOnlineMode) syncGameStateToFirestore();
-    };
-
-    window.confirmReset = function() {
-      openSetupModal();
-    };
-
-    window.openRulesModal = function() {
-      document.getElementById('modalRules').classList.remove('hidden');
-    };
-
-    window.closeRulesModal = function() {
-      document.getElementById('modalRules').classList.add('hidden');
-    };
-
-    /* INITIAL BOOTSTRAP */
-    window.onload = function() {
-      buildBoardTiles();
-      renderBoard();
-      openSetupModal();
-      initAuth();
-    };
   </script>
 </body>
 </html>
