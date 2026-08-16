@@ -284,7 +284,7 @@
                 maxPlayers: parseInt(maxPlayers),
                 players: [{
                     id: STATE.user.id,
-                    name: STATE.user.name,
+                    name: STATE.user.name || 'Jogador',
                     color: null,
                     position: 0,
                     score: 0,
@@ -318,57 +318,87 @@
         }
 
         async function joinRoomAction(roomId) {
-            roomId = roomId.toUpperCase();
+            roomId = roomId.trim().toUpperCase();
+            
+            const btn = document.getElementById('btn-join-submit');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            }
+
             if (STATE.mode === 'online' && db) {
-                const ref = await getRoomRef(roomId);
-                const snap = await getDoc(ref);
-                if (!snap.exists()) {
-                    showToast("Sala não encontrada!", "error");
-                    return;
-                }
-                const room = snap.data();
-                if (room.status !== 'lobby') {
-                    showToast("O jogo já começou nesta sala!", "error");
-                    return;
-                }
-                if (room.players.length >= room.maxPlayers && !room.players.find(p => p.id === STATE.user.id)) {
-                    showToast("Sala cheia!", "error");
-                    return;
-                }
-
-                // Garante que a estrutura de histórico de perguntas existe
-                if (!room.usedQuestions) {
-                    room.usedQuestions = { geografia: [], ciencia: [], historia: [], esportes: [], arte: [], entretenimento: [] };
-                }
-
-                // Adiciona jogador se não estiver
-                if (!room.players.find(p => p.id === STATE.user.id)) {
-                    room.players.push({
-                        id: STATE.user.id,
-                        name: STATE.user.name,
-                        color: null,
-                        position: 0,
-                        score: 0,
-                        isReady: false
-                    });
-                    await updateDoc(ref, { players: room.players });
-                }
-
-                STATE.room = room;
-                STATE.view = 'lobby';
-                
-                // Configura Listener
-                if (unsubscribeRoom) unsubscribeRoom();
-                unsubscribeRoom = onSnapshot(ref, (doc) => {
-                    if (doc.exists()) {
-                        const updatedRoom = doc.data();
-                        handleRoomUpdate(updatedRoom);
-                    } else {
-                        showToast("A sala foi fechada.", "error");
-                        leaveRoomAction();
+                try {
+                    const ref = await getRoomRef(roomId);
+                    const snap = await getDoc(ref);
+                    
+                    if (!snap.exists()) {
+                        showToast("Sala não encontrada! Verifique o código.", "error");
+                        if (btn) { btn.disabled = false; btn.innerHTML = 'Entrar'; }
+                        return;
                     }
-                });
-                render();
+                    
+                    const room = snap.data();
+                    
+                    if (room.status !== 'lobby') {
+                        showToast("O jogo já começou nesta sala!", "error");
+                        if (btn) { btn.disabled = false; btn.innerHTML = 'Entrar'; }
+                        return;
+                    }
+                    
+                    if (room.players.length >= room.maxPlayers && !room.players.find(p => p.id === STATE.user.id)) {
+                        showToast("A sala está cheia!", "error");
+                        if (btn) { btn.disabled = false; btn.innerHTML = 'Entrar'; }
+                        return;
+                    }
+
+                    // Garante que a estrutura de histórico de perguntas existe
+                    if (!room.usedQuestions) {
+                        room.usedQuestions = { geografia: [], ciencia: [], historia: [], esportes: [], arte: [], entretenimento: [] };
+                    }
+
+                    // Adiciona jogador se não estiver
+                    if (!room.players.find(p => p.id === STATE.user.id)) {
+                        room.players.push({
+                            id: STATE.user.id,
+                            name: STATE.user.name || 'Jogador',
+                            color: null,
+                            position: 0,
+                            score: 0,
+                            isReady: false
+                        });
+                        await updateDoc(ref, { 
+                            players: room.players,
+                            updatedAt: new Date().toISOString()
+                        });
+                    }
+
+                    STATE.room = room;
+                    STATE.view = 'lobby';
+                    
+                    // Configura Listener
+                    if (unsubscribeRoom) unsubscribeRoom();
+                    unsubscribeRoom = onSnapshot(ref, (docSnap) => {
+                        if (docSnap.exists()) {
+                            const updatedRoom = docSnap.data();
+                            handleRoomUpdate(updatedRoom);
+                        } else {
+                            showToast("A sala foi fechada.", "error");
+                            leaveRoomAction();
+                        }
+                    }, (error) => {
+                        console.error("Erro no onSnapshot:", error);
+                        showToast("Erro de sincronização da sala.", "error");
+                    });
+                    
+                    render();
+                } catch (err) {
+                    console.error("Erro ao entrar na sala:", err);
+                    showToast("Ocorreu um erro ao entrar.", "error");
+                    if (btn) { btn.disabled = false; btn.innerHTML = 'Entrar'; }
+                }
+            } else {
+                showToast("Conexão online não disponível.", "error");
+                if (btn) { btn.disabled = false; btn.innerHTML = 'Entrar'; }
             }
         }
 
@@ -1107,15 +1137,24 @@
             }
 
             const btnJoin = document.getElementById('btn-join-submit');
-            if (btnJoin) {
-                btnJoin.onclick = () => {
-                    const code = document.getElementById('room-code-input').value;
+            const codeInput = document.getElementById('room-code-input');
+            if (btnJoin && codeInput) {
+                const handleJoin = () => {
+                    const code = codeInput.value.trim();
                     if (code.length === 4) {
                         joinRoomAction(code);
                     } else {
-                        showToast("A senha deve ter 4 caracteres.", "error");
+                        showToast("A senha deve ter exatamente 4 caracteres.", "error");
                     }
                 };
+
+                btnJoin.onclick = handleJoin;
+
+                codeInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        handleJoin();
+                    }
+                });
             }
 
             if (STATE.view === 'game' && STATE.room?.currentQuestion && STATE.mode === 'online') {
