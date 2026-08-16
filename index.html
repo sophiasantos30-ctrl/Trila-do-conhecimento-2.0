@@ -6,7 +6,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// HTML, CSS e JavaScript do cliente unificados em uma resposta
+// Variável para guardar quem está no servidor
+// Formato: { 'id_do_socket': { username: 'João', roomId: 'sala1' } }
+const usuariosConectados = {};
+
 app.get('/', (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -21,6 +24,7 @@ app.get('/', (req, res) => {
         body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { background: #ffffff; padding: 24px; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
         h2 { margin-top: 0; color: #1c1e21; font-size: 1.4rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 12px; }
+        .contador { font-size: 0.9rem; color: #65676b; margin-bottom: 16px; display: block; }
         ul { list-style: none; padding: 0; margin: 0; }
         li { background: #e7f3ff; color: #1877f2; padding: 12px 16px; margin-top: 8px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 8px; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -28,7 +32,8 @@ app.get('/', (req, res) => {
     </head>
     <body>
       <div class="container">
-        <h2>Entradas na Sala em Tempo Real</h2>
+        <h2>Jogadores na Sala</h2>
+        <span id="contador" class="contador">Carregando...</span>
         <ul id="lista-usuarios"></ul>
       </div>
 
@@ -37,15 +42,27 @@ app.get('/', (req, res) => {
         const username = prompt("Digite seu nome para entrar:") || "Usuário Anônimo";
         const roomId = "sala-principal";
 
-        // Notifica o servidor que o usuário entrou
         socket.emit("joinRoom", { roomId, username });
 
-        // Ouve atualizações instantâneas de quem entra na sala
-        socket.on("userJoined", (data) => {
+        // Ouve a lista ATUALIZADA com todos os jogadores (incluindo o criador)
+        socket.on("updateUsersList", (usersInRoom) => {
           const lista = document.getElementById("lista-usuarios");
-          const item = document.createElement("li");
-          item.textContent = \`🟢 \${data.username} acabou de entrar!\`;
-          lista.appendChild(item);
+          const contador = document.getElementById("contador");
+          
+          // Limpa a lista atual para não duplicar
+          lista.innerHTML = "";
+          
+          // Atualiza o contador de jogadores
+          contador.textContent = usersInRoom.length + " jogador(es) na sala";
+
+          // Recria a lista com todos que estão na sala
+          usersInRoom.forEach(user => {
+            const item = document.createElement("li");
+            // Se for você mesmo, coloca um "(Você)" ao lado do nome
+            const isMe = user.id === socket.id ? " (Você)" : "";
+            item.textContent = \`🟢 \${user.username}\${isMe}\`;
+            lista.appendChild(item);
+          });
         });
       </script>
     </body>
@@ -53,13 +70,34 @@ app.get('/', (req, res) => {
   `);
 });
 
-// Lógica de comunicação do backend
 io.on('connection', (socket) => {
   socket.on('joinRoom', ({ roomId, username }) => {
     socket.join(roomId);
+    
+    // Salva o usuário na memória do servidor
+    usuariosConectados[socket.id] = { id: socket.id, username, roomId };
 
-    // Emite instantaneamente para todos os participantes conectados na mesma sala
-    io.to(roomId).emit('userJoined', { username, id: socket.id });
+    // Filtra apenas os usuários que estão nesta sala específica
+    const usuariosNaSala = Object.values(usuariosConectados).filter(u => u.roomId === roomId);
+
+    // Envia a lista completa para TODOS na sala
+    io.to(roomId).emit('updateUsersList', usuariosNaSala);
+  });
+
+  // Remove o usuário da lista se ele fechar a aba ou cair a internet
+  socket.on('disconnect', () => {
+    const usuario = usuariosConectados[socket.id];
+    
+    if (usuario) {
+      const roomId = usuario.roomId;
+      delete usuariosConectados[socket.id]; // Remove da memória
+      
+      // Pega a nova lista sem o usuário que saiu
+      const usuariosRestantes = Object.values(usuariosConectados).filter(u => u.roomId === roomId);
+      
+      // Atualiza a tela de quem ficou na sala
+      io.to(roomId).emit('updateUsersList', usuariosRestantes);
+    }
   });
 });
 
