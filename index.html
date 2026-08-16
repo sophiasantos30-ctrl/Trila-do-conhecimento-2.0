@@ -4,13 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trilha do Conhecimento - Edição Multijogador</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <!-- Google Fonts: Inter and Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -24,12 +20,12 @@
             heading: ['"Outfit"', 'sans-serif'],
           },
           colors: {
-            catGeo: '#00b4ff',         // Azul Cyan (Geografia - Willy)
-            catScience: '#00e676',     // Verde Elétrico (Ciências - Albert)
-            catHistory: '#ff7000',     // Laranja Solar (História - Tito)
-            catArts: '#ff2a8d',        // Rosa Choque (Artes - Bonzo)
-            catSports: '#ffcc00',      // Amarelo Ouro (Esportes - Tina)
-            catEnt: '#ff3355',         // Vermelho Carmim (Entretenimento - Pop)
+            catGeo: '#00b4ff',
+            catScience: '#00e676',
+            catHistory: '#ff7000',
+            catArts: '#ff2a8d',
+            catSports: '#ffcc00',
+            catEnt: '#ff3355',
           },
           animation: {
             'bounce-short': 'bounceShort 0.5s ease-in-out 2',
@@ -139,17 +135,15 @@
   <!-- PAINEL SUPERIOR DE PLACAR DOS JOGADORES -->
   <section id="scoreboardBar" class="w-full bg-slate-900/60 border-b border-slate-800/80 px-4 py-2 hidden">
     <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="playersScoreContainer">
-      <!-- Injetado via JS -->
     </div>
   </section>
 
-  <!-- ÁREA PRINCIPAL DO TABULEIRO E PAINEL DE AÇÃO -->
+  <!-- ÁREA PRINCIPAL -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col lg:flex-row gap-6 items-start">
     
-    <!-- LADO ESQUERDO: CONTROLE DO TURNO & DADO -->
+    <!-- LADO ESQUERDO: VEZ & DADO -->
     <div class="w-full lg:w-80 flex flex-col gap-4 sticky top-20 z-20">
       
-      <!-- CARD DO JOGADOR DA VEZ -->
       <div class="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <span class="text-[11px] font-black uppercase tracking-wider text-slate-400">Vez de Jogar</span>
@@ -177,55 +171,58 @@
           <div id="diceValue" class="w-20 h-20 bg-gradient-to-tr from-slate-900 to-indigo-950 rounded-2xl border-2 border-indigo-500/50 flex items-center justify-center text-4xl font-black text-amber-400 shadow-xl shadow-indigo-950/50 mb-3 transition-transform duration-300">
             🎲
           </div>
+          
           <button id="btnRollDice" onclick="rollDice()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-95 transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-dice"></i> Rolar Dado
           </button>
+
+          <div id="notYourTurnMsg" class="hidden text-xs text-slate-400 font-bold bg-slate-900/90 py-2.5 px-4 rounded-xl border border-slate-800 w-full animate-pulse">
+            <i class="fa-solid fa-hourglass-half mr-1 text-amber-400"></i> Aguarde a sua vez...
+          </div>
         </div>
       </div>
 
       <!-- LEGENDA DE CATEGORIAS -->
       <div class="glass-card rounded-2xl p-4 border border-slate-800 hidden sm:block">
-        <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">Categorias e Personagens</h4>
+        <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">Categorias</h4>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-sky-950/40 border border-sky-500/30 text-sky-300">
-            <span>🌐</span> <span>Geografia (Blue - Willy)</span>
+            <span>🌐</span> <span>Geografia</span>
           </div>
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300">
-            <span>🧪</span> <span>Ciências (Albert)</span>
+            <span>🧪</span> <span>Ciências</span>
           </div>
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-orange-950/40 border border-orange-500/30 text-orange-300">
-            <span>🛡️</span> <span>História (Tito)</span>
+            <span>🛡️</span> <span>História</span>
           </div>
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-pink-950/40 border border-pink-500/30 text-pink-300">
-            <span>🖌️</span> <span>Artes (Bonzo)</span>
+            <span>🖌️</span> <span>Artes</span>
           </div>
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-yellow-950/40 border border-yellow-500/30 text-yellow-300">
-            <span>🏋️</span> <span>Esportes (Tina)</span>
+            <span>🏋️</span> <span>Esportes</span>
           </div>
           <div class="flex items-center gap-2 p-1.5 rounded-lg bg-red-950/40 border border-red-500/30 text-red-300">
-            <span>🍿</span> <span>Entretenimento (Pop)</span>
+            <span>🍿</span> <span>Entretenimento</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- LADO DIREITO: GRADE DO TABULEIRO (CASAS 1 ATÉ 50) -->
+    <!-- LADO DIREITO: TABULEIRO -->
     <div class="flex-1 w-full bg-slate-900/60 rounded-3xl p-3 sm:p-5 border border-slate-800/80 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-heading font-black text-lg sm:text-xl text-white flex items-center gap-2">
+        <h2 id="boardHeaderTitle" class="font-heading font-black text-lg sm:text-xl text-white flex items-center gap-2">
           <i class="fa-solid fa-map-location-dot text-amber-400"></i> Tabuleiro da Trilha (50 Casas)
         </h2>
-        <span class="text-xs text-slate-400">Objetivo: Chegar à Casa 50</span>
+        <span id="boardGoalText" class="text-xs text-slate-400">Objetivo: Chegar à Casa 50</span>
       </div>
 
-      <!-- BOARD GRID CONTAINER -->
       <div id="boardContainer" class="board-grid">
-        <!-- 50 Casas geradas dinamicamente via JavaScript -->
       </div>
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURAÇÃO (LOCAL / ONLINE) -->
+  <!-- MODAL DE CONFIGURAÇÃO -->
   <div id="modalSetup" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
     <div class="glass-modal max-w-2xl w-full rounded-3xl p-5 sm:p-8 border border-slate-700 shadow-2xl max-h-[92vh] flex flex-col">
       
@@ -237,21 +234,34 @@
         <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Escolha o modo de jogo e personalize seus participantes</p>
       </div>
 
-      <!-- TABS: LOCAL VS ONLINE -->
-      <div class="grid grid-cols-2 gap-2 mb-5 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800">
+      <div class="grid grid-cols-2 gap-2 mb-4 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800">
         <button id="tabLocalMode" onclick="switchGameMode('local')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition bg-indigo-600 text-white shadow">
-          <i class="fa-solid fa-desktop"></i> Jogar Local (Mesma Tela)
+          <i class="fa-solid fa-desktop"></i> Jogar Local
         </button>
         <button id="tabOnlineMode" onclick="switchGameMode('online')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition text-slate-400 hover:text-white">
-          <i class="fa-solid fa-wifi"></i> Jogar Online (Outro Celular)
+          <i class="fa-solid fa-wifi"></i> Jogar Online
         </button>
+      </div>
+
+      <!-- SELETOR DE QUANTIDADE DE PERGUNTAS / CASAS -->
+      <div class="mb-4 p-3 rounded-2xl bg-slate-900/90 border border-slate-800 text-center">
+        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+          <i class="fa-solid fa-list-check mr-1"></i> Quantidade de Casas / Perguntas
+        </label>
+        <div class="flex justify-center gap-2" id="tileCountButtons">
+          <button type="button" onclick="setTotalTiles(20)" class="tile-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700">20</button>
+          <button type="button" onclick="setTotalTiles(30)" class="tile-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700">30</button>
+          <button type="button" onclick="setTotalTiles(40)" class="tile-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700">40</button>
+          <button type="button" onclick="setTotalTiles(50)" class="tile-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-black text-xs border border-indigo-400 shadow">50</button>
+          <button type="button" onclick="setTotalTiles(60)" class="tile-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700">60</button>
+        </div>
       </div>
 
       <!-- MODO LOCAL -->
       <div id="setupLocalView" class="flex-1 flex flex-col overflow-hidden">
-        <div class="mb-4">
+        <div class="mb-3">
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 text-center">
-            Quantidade de Jogadores ou Equipes
+            Quantidade de Jogadores
           </label>
           <div class="flex justify-center gap-2" id="playerCountButtons">
             <button type="button" onclick="setPlayerCount(2)" class="count-btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-black text-sm border border-indigo-400 shadow">2</button>
@@ -263,10 +273,9 @@
         </div>
 
         <div id="playerInputsContainer" class="flex-1 overflow-y-auto pr-1 space-y-3 mb-4">
-          <!-- Linhas de Jogadores injetadas dinamicamente via JS -->
         </div>
 
-        <button type="button" onclick="startGameLocal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-slate-950 font-black text-base shadow-xl shadow-emerald-500/20 transition active:scale-98">
+        <button type="button" onclick="startGameLocal()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 text-slate-950 font-black text-base shadow-xl transition">
           <i class="fa-solid fa-play mr-2"></i> Iniciar Tabuleiro Local
         </button>
       </div>
@@ -279,19 +288,17 @@
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome do Jogador</label>
+              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Nome</label>
               <input type="text" id="onlinePlayerName" value="Jogador 1" maxlength="14" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
             </div>
             <div>
-              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor do Peão</label>
+              <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cor</label>
               <select id="onlinePlayerColor" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                <!-- Injetado via JS -->
               </select>
             </div>
             <div>
               <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Personagem</label>
               <select id="onlinePlayerClass" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-indigo-500">
-                <!-- Injetado via JS -->
               </select>
             </div>
           </div>
@@ -301,11 +308,11 @@
           <div class="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 flex flex-col justify-between text-center space-y-3">
             <div>
               <i class="fa-solid fa-plus-circle text-3xl text-indigo-400 mb-1"></i>
-              <h4 class="font-heading font-extrabold text-white text-sm">Criar Nova Sala</h4>
-              <p class="text-xs text-slate-400 mt-0.5">Gere um código para convidar amigos de outros aparelhos.</p>
+              <h4 class="font-heading font-extrabold text-white text-sm">Criar Nova Sala (Host)</h4>
+              <p class="text-xs text-slate-400 mt-0.5">Você será o criador e definirá a quantidade de perguntas.</p>
             </div>
             <button onclick="handleCreateOnlineRoom()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow transition">
-              <i class="fa-solid fa-key mr-1"></i> Gerar Código de Sala
+              <i class="fa-solid fa-key mr-1"></i> Criar Sala
             </button>
           </div>
 
@@ -313,7 +320,7 @@
             <div>
               <i class="fa-solid fa-right-to-bracket text-3xl text-emerald-400 mb-1"></i>
               <h4 class="font-heading font-extrabold text-white text-sm">Entrar em Sala Existente</h4>
-              <p class="text-xs text-slate-400 mt-0.5">Digite o código de 4 dígitos informado pelo criador.</p>
+              <p class="text-xs text-slate-400 mt-0.5">Digite o código da sala gerado pelo criador.</p>
             </div>
             <div class="space-y-2">
               <input type="text" id="inputJoinCode" placeholder="Ex: 8A42" maxlength="6" class="w-full px-3 py-2 text-center uppercase tracking-widest font-mono text-sm font-extrabold rounded-xl bg-slate-950 border border-slate-700 text-amber-300 focus:outline-none focus:border-emerald-500">
@@ -340,13 +347,19 @@
           <div>
             <h5 class="text-xs font-bold uppercase text-slate-300 mb-2">Jogadores Conectados (<span id="lobbyCount">1</span>/6)</h5>
             <div id="lobbyPlayersList" class="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
-              <!-- Jogadores da sala injetados via JS -->
             </div>
           </div>
 
-          <button id="btnStartOnlineGame" onclick="handleStartOnlineGame()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 text-slate-950 font-black text-sm shadow-lg transition">
-            <i class="fa-solid fa-play mr-1.5"></i> Iniciar Partida Online
-          </button>
+          <!-- BOTÃO INICIAR PARTIDA ONLINE (EXCLUSIVO DO HOST) -->
+          <div id="hostStartContainer">
+            <button id="btnStartOnlineGame" onclick="handleStartOnlineGame()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-indigo-600 hover:from-emerald-400 text-slate-950 font-black text-sm shadow-lg transition">
+              <i class="fa-solid fa-play mr-1.5"></i> Iniciar Partida Online (Apenas Criador)
+            </button>
+          </div>
+          
+          <div id="nonHostWaitingMsg" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-center text-xs font-bold text-slate-400">
+            <i class="fa-solid fa-spinner animate-spin text-amber-400 mr-2"></i> Aguardando o criador da sala iniciar a partida...
+          </div>
         </div>
 
       </div>
@@ -358,8 +371,7 @@
   <div id="modalQuestion" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-lg hidden">
     <div class="glass-modal max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-2xl relative animate-card-flip max-h-[90vh] overflow-y-auto">
       
-      <!-- Botão de fechar/sair no topo superior direito -->
-      <button onclick="closeQuestionModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition" title="Sair da Pergunta">
+      <button onclick="closeQuestionModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
@@ -380,7 +392,7 @@
       </div>
 
       <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
-        <span><i class="fa-solid fa-layer-group text-slate-500"></i> Carta retirada do monte</span>
+        <span><i class="fa-solid fa-layer-group text-slate-500"></i> Carta sorteada sem repetição</span>
         <span id="qDeckRemaining" class="font-semibold text-slate-300">Restam 10 cartas</span>
       </div>
 
@@ -391,21 +403,19 @@
       </div>
 
       <div id="qOptions" class="space-y-2.5 mb-4">
-        <!-- 4 Opções injetadas via JS -->
       </div>
 
       <div id="qFeedback" class="hidden p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all">
-        <!-- Feedback de resposta -->
       </div>
 
       <button id="btnNextTurn" onclick="closeQuestionModal()" class="hidden w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-lg transition flex items-center justify-center gap-2">
-        <span>Sair / Continuar Partida</span>
+        <span>Continuar Partida</span>
         <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
   </div>
 
-  <!-- MODAL DE VITÓRIA & PÓDIO FINAL COM CLASSIFICAÇÃO COMPLETA -->
+  <!-- MODAL DE VITÓRIA -->
   <div id="modalVictory" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl hidden">
     <div class="glass-modal max-w-2xl w-full rounded-3xl p-6 sm:p-8 border border-amber-500/40 shadow-2xl text-center relative overflow-hidden">
       
@@ -415,20 +425,16 @@
       <h2 class="font-heading font-black text-3xl sm:text-4xl text-white bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">
         Fim de Jogo!
       </h2>
-      <p class="text-sm text-slate-300 mt-1 mb-6">Chegou à Casa 50 e conquistou a vitória na Trilha do Conhecimento!</p>
+      <p id="victorySubtitle" class="text-sm text-slate-300 mt-1 mb-6">Chegou ao final da trilha e venceu a Trilha do Conhecimento!</p>
 
-      <!-- PÓDIO TOP 3 -->
       <div id="podiumContainer" class="flex items-end justify-center gap-3 sm:gap-6 mb-8 pt-4 min-h-[180px]">
-        <!-- Injetado via JS -->
       </div>
 
-      <!-- CLASSIFICAÇÃO FINAL COMPLETA (TODOS OS JOGADORES) -->
       <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 text-left mb-6">
         <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
           <i class="fa-solid fa-list-ol text-amber-400"></i> Classificação Final Completa
         </h4>
         <div id="rankingList" class="space-y-2 text-sm">
-          <!-- Injetado via JS com todos os participantes (1º ao 6º) -->
         </div>
       </div>
 
@@ -436,8 +442,8 @@
         <button onclick="restartSamePlayers()" class="flex-1 py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition">
           <i class="fa-solid fa-rotate-right mr-2"></i> Jogar Novamente
         </button>
-        <button onclick="openSetupModal()" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-slate-950 font-black text-sm shadow-lg transition">
-          <i class="fa-solid fa-users-gear mr-2"></i> Configurar Novos Jogadores
+        <button onclick="openSetupModal()" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-400 text-slate-950 font-black text-sm shadow-lg transition">
+          <i class="fa-solid fa-users-gear mr-2"></i> Novas Configurações
         </button>
       </div>
 
@@ -456,20 +462,11 @@
         </button>
       </div>
       <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
-        <p>1. <strong>Objetivo:</strong> O primeiro participante a alcançar a <strong>Casa 50</strong> encerra a trilha e vence o jogo.</p>
-        <p>2. <strong>Cores e Categorias:</strong>
-          <br />• <span class="text-sky-400 font-bold">Azul (🌐 Willy)</span>: Geografia
-          <br />• <span class="text-emerald-400 font-bold">Verde (🧪 Albert)</span>: Ciências
-          <br />• <span class="text-orange-400 font-bold">Laranja (🛡️ Tito)</span>: História
-          <br />• <span class="text-pink-400 font-bold">Rosa (🖌️ Bonzo)</span>: Artes
-          <br />• <span class="text-yellow-400 font-bold">Amarelo (🏋️ Tina)</span>: Esportes
-          <br />• <span class="text-red-400 font-bold">Vermelho (🍿 Pop)</span>: Entretenimento
-        </p>
-        <p>3. <strong>Cartas sem Repetição:</strong> Ao cair numa casa, uma carta é sorteada do monte daquela categoria e eliminada do jogo para não repetir.</p>
-        <p>4. <strong>Pontuação e Bônus:</strong>
-          <br />• Resposta certa: Ganha pontos (100 a 300 pts) e avança 1 ou 2 casas bônus!
-          <br />• Resposta errada: Não ganha bônus.
-        </p>
+        <p>1. <strong>Objetivo:</strong> O primeiro participante a alcançar a <strong>última casa da trilha</strong> vence.</p>
+        <p>2. <strong>Seleção de Perguntas:</strong> O criador da partida pode definir a quantidade de perguntas/casas do tabuleiro (20, 30, 40, 50 ou 60).</p>
+        <p>3. <strong>Dado Privado:</strong> No modo online, a opção de rolar o dado só estará disponível no seu turno.</p>
+        <p>4. <strong>Perguntas Dinâmicas:</strong> As perguntas são embaralhadas e não se repetem durante a partida.</p>
+        <p>5. <strong>Apenas o Criador Inicia:</strong> Nas partidas online, apenas o Host que gerou o código da sala pode iniciar o jogo.</p>
       </div>
       <button onclick="closeRulesModal()" class="w-full mt-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700">
         Entendi! Fechar
@@ -477,31 +474,27 @@
     </div>
   </div>
 
-  <!-- SCRIPT LÓGICO DO JOGO DE TABULEIRO -->
   <script>
-    /* CATEGORIAS DO JOGO */
     const CATEGORIES = {
-      geo: { id: 'geo', name: 'Geografia (Willy)', color: '#00b4ff', border: 'border-sky-400', bg: 'bg-sky-950/90', text: 'text-sky-300', icon: 'fa-earth-americas' },
-      science: { id: 'science', name: 'Ciências (Albert)', color: '#00e676', border: 'border-emerald-400', bg: 'bg-emerald-950/90', text: 'text-emerald-300', icon: 'fa-flask' },
-      history: { id: 'history', name: 'História (Tito)', color: '#ff7000', border: 'border-orange-400', bg: 'bg-orange-950/90', text: 'text-orange-300', icon: 'fa-landmark' },
-      arts: { id: 'arts', name: 'Artes (Bonzo)', color: '#ff2a8d', border: 'border-pink-400', bg: 'bg-pink-950/90', text: 'text-pink-300', icon: 'fa-palette' },
-      sports: { id: 'sports', name: 'Esportes (Tina)', color: '#ffcc00', border: 'border-yellow-400', bg: 'bg-yellow-950/90', text: 'text-yellow-300', icon: 'fa-futbol' },
-      ent: { id: 'ent', name: 'Entretenimento (Pop)', color: '#ff3355', border: 'border-red-400', bg: 'bg-red-950/90', text: 'text-red-300', icon: 'fa-film' }
+      geo: { id: 'geo', name: 'Geografia', color: '#00b4ff', border: 'border-sky-400', bg: 'bg-sky-950/90', text: 'text-sky-300', icon: 'fa-earth-americas' },
+      science: { id: 'science', name: 'Ciências', color: '#00e676', border: 'border-emerald-400', bg: 'bg-emerald-950/90', text: 'text-emerald-300', icon: 'fa-flask' },
+      history: { id: 'history', name: 'História', color: '#ff7000', border: 'border-orange-400', bg: 'bg-orange-950/90', text: 'text-orange-300', icon: 'fa-landmark' },
+      arts: { id: 'arts', name: 'Artes', color: '#ff2a8d', border: 'border-pink-400', bg: 'bg-pink-950/90', text: 'text-pink-300', icon: 'fa-palette' },
+      sports: { id: 'sports', name: 'Esportes', color: '#ffcc00', border: 'border-yellow-400', bg: 'bg-yellow-950/90', text: 'text-yellow-300', icon: 'fa-futbol' },
+      ent: { id: 'ent', name: 'Entretenimento', color: '#ff3355', border: 'border-red-400', bg: 'bg-red-950/90', text: 'text-red-300', icon: 'fa-film' }
     };
 
     const CAT_KEYS = ['geo', 'science', 'history', 'arts', 'sports', 'ent'];
 
-    /* PERSONAGENS DISPONÍVEIS */
     const CHARACTERS = [
-      { id: 'tito', name: 'Tito', desc: 'Globo terrestre', icon: '🌐' },
+      { id: 'tito', name: 'Willy', desc: 'Globo terrestre', icon: '🌐' },
       { id: 'albert', name: 'Albert', desc: 'Tubo de ensaio', icon: '🧪' },
-      { id: 'hector', name: 'Hector', desc: 'Armadura medieval', icon: '🛡️' },
-      { id: 'tina', name: 'Tina', desc: 'Pincel artista', icon: '🖌️' },
-      { id: 'bonzo', name: 'Bonzo', desc: 'Haltere fortão', icon: '🏋️' },
+      { id: 'hector', name: 'Tito', desc: 'Armadura medieval', icon: '🛡️' },
+      { id: 'tina', name: 'Bonzo', desc: 'Pincel artista', icon: '🖌️' },
+      { id: 'bonzo', name: 'Tina', desc: 'Haltere fortão', icon: '🏋️' },
       { id: 'pop', name: 'Pop', desc: 'Balde de pipoca', icon: '🍿' }
     ];
 
-    /* OPÇÕES DE CORES DOS PEÕES */
     const COLOR_OPTIONS = [
       { id: 'cyan', hex: '#00e5ff', name: 'Ciano Neon', bg: 'bg-cyan-400' },
       { id: 'gold', hex: '#ffcc00', name: 'Ouro Brilhante', bg: 'bg-yellow-400' },
@@ -511,7 +504,6 @@
       { id: 'orange', hex: '#ff7000', name: 'Laranja Solar', bg: 'bg-orange-500' }
     ];
 
-    /* BANCO DE PERGUNTAS EXTENSO */
     const QUESTION_DATABASE = {
       geo: [
         { level: 'Fácil', points: 100, text: 'Qual é o maior país do mundo em extensão territorial?', options: ['Canadá', 'China', 'Rússia', 'Estados Unidos'], correct: 2 },
@@ -551,18 +543,20 @@
       ent: [
         { level: 'Fácil', points: 100, text: 'Qual é o nome do robô azul ícone da empresa SEGA?', options: ['Sonic', 'Mario', 'Crash', 'Megaman'], correct: 0 },
         { level: 'Fácil', points: 100, text: 'Qual superheroína usa o Laço da Verdade nos quadrinhos?', options: ['Tempestade', 'Viúva Negra', 'Mulher-Maravilha', 'Capitã Marvel'], correct: 2 },
-        { level: 'Médio', points: 200, text: 'Qual filme venceu o Oscar de Melhor Filme em 1998 acumulando 11 estatuetas?', options: ['Gladiador', 'Titanic', 'Avatar', 'Forrest Gump'], correct: 1 },
+        { level: 'Médio', points: 200, text: 'Qual filme venceu o Oscar de Melhor Filme em 1998?', options: ['Gladiador', 'Titanic', 'Avatar', 'Forrest Gump'], correct: 1 },
         { level: 'Médio', points: 200, text: 'Qual série de TV traz os reinos de Westeros e Essos?', options: ['The Witcher', 'Game of Thrones', 'Vikings', 'LoTR'], correct: 1 },
         { level: 'Difícil', points: 300, text: 'Qual é o nome do bruxo protagonista da saga criada por J.K. Rowling?', options: ['Harry Potter', 'Geralt de Rívia', 'Merlin', 'Gandalf'], correct: 0 }
       ]
     };
 
-    /* ESTADO GLOBAL DO JOGO */
     let gameState = {
-      mode: 'local', // 'local' ou 'online'
+      mode: 'local',
       localPlayerCount: 2,
+      totalTiles: 50, // Padrão: 50 casas/perguntas
       players: [],
       currentPlayerIndex: 0,
+      myPlayerId: 1,
+      isHost: false,
       round: 1,
       isRolling: false,
       activeQuestion: null,
@@ -571,7 +565,6 @@
       isSoundOn: true
     };
 
-    // ÁUDIO SINTETIZADO (WEB AUDIO API)
     let audioCtx = null;
     function playSound(type) {
       if (!gameState.isSoundOn) return;
@@ -593,9 +586,9 @@
           osc.stop(now + 0.15);
         } else if (type === 'correct') {
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(523.25, now); // C5
-          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
           gain.gain.setValueAtTime(0.3, now);
           gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
           osc.start(now);
@@ -625,19 +618,39 @@
       }
     }
 
-    /* INICIALIZAÇÃO DA INTERFACE */
-    window.addEventListener('DOMContentLoaded', () => {
-      initDecks();
-      renderOnlineOptions();
-      setPlayerCount(2);
-      openSetupModal();
-    });
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
     function initDecks() {
       gameState.decks = {};
       CAT_KEYS.forEach(cat => {
-        // Copia profunda para permitir eliminar cartas do monte
-        gameState.decks[cat] = [...QUESTION_DATABASE[cat]];
+        gameState.decks[cat] = shuffleArray(QUESTION_DATABASE[cat]);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initDecks();
+      renderOnlineOptions();
+      setPlayerCount(2);
+      setTotalTiles(50);
+      openSetupModal();
+    });
+
+    function setTotalTiles(count) {
+      gameState.totalTiles = count;
+      const buttons = document.querySelectorAll('#tileCountButtons button');
+      buttons.forEach(btn => {
+        if (parseInt(btn.innerText) === count) {
+          btn.className = "tile-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-black text-xs border border-indigo-400 shadow";
+        } else {
+          btn.className = "tile-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs border border-slate-700";
+        }
       });
     }
 
@@ -719,9 +732,10 @@
       classSel.innerHTML = CHARACTERS.map(ch => `<option value="${ch.id}">${ch.icon} ${ch.name}</option>`).join('');
     }
 
-    /* INICIAR JOGO LOCAL */
     function startGameLocal() {
       gameState.players = [];
+      gameState.isHost = true;
+      gameState.myPlayerId = 1;
       initDecks();
 
       for (let i = 0; i < gameState.localPlayerCount; i++) {
@@ -753,12 +767,13 @@
       updateActivePlayerUI();
     }
 
-    /* ONLINE HANDLERS */
     function handleCreateOnlineRoom() {
       const code = Math.floor(1000 + Math.random() * 9000).toString();
       gameState.roomCode = code;
+      gameState.isHost = true;
+      gameState.myPlayerId = 1;
 
-      const name = document.getElementById('onlinePlayerName').value.trim() || 'Jogador Online';
+      const name = document.getElementById('onlinePlayerName').value.trim() || 'Jogador 1';
       const colorId = document.getElementById('onlinePlayerColor').value;
       const charId = document.getElementById('onlinePlayerClass').value;
 
@@ -767,7 +782,7 @@
 
       gameState.players = [{
         id: 1,
-        name: name + ' (Host)',
+        name: name + ' (Criador)',
         color: colorObj,
         char: charObj,
         tile: 1,
@@ -791,7 +806,10 @@
       }
 
       gameState.roomCode = inputCode;
-      const name = document.getElementById('onlinePlayerName').value.trim() || 'Jogador Conectado';
+      gameState.isHost = false;
+      gameState.myPlayerId = 2;
+
+      const name = document.getElementById('onlinePlayerName').value.trim() || 'Jogador 2';
       const colorId = document.getElementById('onlinePlayerColor').value;
       const charId = document.getElementById('onlinePlayerClass').value;
 
@@ -799,7 +817,7 @@
       const charObj = CHARACTERS.find(ch => ch.id === charId);
 
       gameState.players = [
-        { id: 1, name: 'Criador da Sala (Host)', color: COLOR_OPTIONS[0], char: CHARACTERS[0], tile: 1, score: 0 },
+        { id: 1, name: 'Criador da Sala', color: COLOR_OPTIONS[0], char: CHARACTERS[0], tile: 1, score: 0 },
         { id: 2, name: name, color: colorObj, char: charObj, tile: 1, score: 0 }
       ];
 
@@ -815,8 +833,19 @@
     function updateLobbyUI() {
       const list = document.getElementById('lobbyPlayersList');
       const count = document.getElementById('lobbyCount');
+      const hostContainer = document.getElementById('hostStartContainer');
+      const nonHostMsg = document.getElementById('nonHostWaitingMsg');
+
       list.innerHTML = '';
       count.innerText = gameState.players.length;
+
+      if (gameState.isHost) {
+        hostContainer.classList.remove('hidden');
+        nonHostMsg.classList.add('hidden');
+      } else {
+        hostContainer.classList.add('hidden');
+        nonHostMsg.classList.remove('hidden');
+      }
 
       gameState.players.forEach(p => {
         const item = document.createElement('div');
@@ -833,7 +862,10 @@
     }
 
     function handleStartOnlineGame() {
-      if (gameState.players.length < 1) return;
+      if (!gameState.isHost) {
+        alert('Apenas o criador da sala pode iniciar o jogo!');
+        return;
+      }
       document.getElementById('modalSetup').classList.add('hidden');
       document.getElementById('scoreboardBar').classList.remove('hidden');
       initDecks();
@@ -842,12 +874,14 @@
       updateActivePlayerUI();
     }
 
-    /* RENDERIZAÇÃO DO TABULEIRO (50 CASAS) */
     function renderBoard() {
       const container = document.getElementById('boardContainer');
       container.innerHTML = '';
 
-      for (let i = 1; i <= 50; i++) {
+      document.getElementById('boardHeaderTitle').innerHTML = `<i class="fa-solid fa-map-location-dot text-amber-400"></i> Tabuleiro da Trilha (${gameState.totalTiles} Casas)`;
+      document.getElementById('boardGoalText').innerText = `Objetivo: Chegar à Casa ${gameState.totalTiles}`;
+
+      for (let i = 1; i <= gameState.totalTiles; i++) {
         const catKey = CAT_KEYS[(i - 1) % CAT_KEYS.length];
         const cat = CATEGORIES[catKey];
 
@@ -862,7 +896,6 @@
             <i class="fa-solid ${cat.icon} ${cat.text} opacity-60"></i>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-1 my-1 pawn-container" id="tilePawns_${i}">
-            <!-- Peões renderizados aqui -->
           </div>
         `;
         container.appendChild(tile);
@@ -870,10 +903,8 @@
       renderPawns();
     }
 
-    /* RENDERIZAÇÃO DOS PEÕES NAS CASAS */
     function renderPawns() {
-      // Limpa peões existentes
-      for (let i = 1; i <= 50; i++) {
+      for (let i = 1; i <= gameState.totalTiles; i++) {
         const el = document.getElementById(`tilePawns_${i}`);
         if (el) el.innerHTML = '';
       }
@@ -891,7 +922,6 @@
       });
     }
 
-    /* ATUALIZAÇÃO DO PLACAR SUPERIOR */
     function updateScoreboard() {
       const container = document.getElementById('playersScoreContainer');
       container.innerHTML = '';
@@ -916,7 +946,6 @@
       });
     }
 
-    /* ATUALIZAR UI DO JOGADOR ATUAL */
     function updateActivePlayerUI() {
       const p = gameState.players[gameState.currentPlayerIndex];
       document.getElementById('turnCounterBadge').innerText = `Rodada ${gameState.round}`;
@@ -930,11 +959,20 @@
       document.getElementById('activePlayerTile').innerText = p.tile;
       document.getElementById('activePlayerScore').innerText = `${p.score} pts`;
 
-      document.getElementById('btnRollDice').disabled = false;
-      document.getElementById('btnRollDice').classList.remove('opacity-50', 'cursor-not-allowed');
+      const btnRoll = document.getElementById('btnRollDice');
+      const msgNotTurn = document.getElementById('notYourTurnMsg');
+
+      if (gameState.mode === 'online' && p.id !== gameState.myPlayerId) {
+        btnRoll.classList.add('hidden');
+        msgNotTurn.classList.remove('hidden');
+      } else {
+        btnRoll.classList.remove('hidden');
+        msgNotTurn.classList.add('hidden');
+        btnRoll.disabled = false;
+        btnRoll.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
     }
 
-    /* ROLAR O DADO */
     function rollDice() {
       if (gameState.isRolling) return;
       gameState.isRolling = true;
@@ -963,16 +1001,15 @@
       }, 80);
     }
 
-    /* MOVER O JOGADOR NA TRILHA */
     function movePlayer(steps) {
       const player = gameState.players[gameState.currentPlayerIndex];
-      player.tile = Math.min(50, player.tile + steps);
+      player.tile = Math.min(gameState.totalTiles, player.tile + steps);
 
       renderPawns();
       updateScoreboard();
       updateActivePlayerUI();
 
-      if (player.tile >= 50) {
+      if (player.tile >= gameState.totalTiles) {
         setTimeout(() => {
           showVictoryModal();
         }, 600);
@@ -983,24 +1020,17 @@
       }
     }
 
-    /* SORTEAR PERGUNTA DO MONTE DA CATEGORIA */
     function triggerTileQuestion(tileNum) {
       const catKey = CAT_KEYS[(tileNum - 1) % CAT_KEYS.length];
       const cat = CATEGORIES[catKey];
-      const deck = gameState.decks[catKey];
 
-      if (!deck || deck.length === 0) {
-        // Se o monte zerar, reinicializa para aquela categoria
-        gameState.decks[catKey] = [...QUESTION_DATABASE[catKey]];
+      if (!gameState.decks[catKey] || gameState.decks[catKey].length === 0) {
+        gameState.decks[catKey] = shuffleArray(QUESTION_DATABASE[catKey]);
       }
 
-      // Retira uma carta do monte (sem repetição)
-      const cardIndex = Math.floor(Math.random() * gameState.decks[catKey].length);
-      const q = gameState.decks[catKey].splice(cardIndex, 1)[0];
-
+      const q = gameState.decks[catKey].shift();
       gameState.activeQuestion = { ...q, catKey: catKey };
 
-      // Configurar Modal de Pergunta
       const modal = document.getElementById('modalQuestion');
       const badge = document.getElementById('qCatBadge');
       const icon = document.getElementById('qCatIcon');
@@ -1037,27 +1067,25 @@
       modal.classList.remove('hidden');
     }
 
-    /* RESPONDER PERGUNTA */
     function answerQuestion(selectedIndex) {
       const q = gameState.activeQuestion;
       const player = gameState.players[gameState.currentPlayerIndex];
       const feedback = document.getElementById('qFeedback');
       const opts = document.querySelectorAll('#qOptions button');
 
-      // Desativar botões
       opts.forEach(b => b.disabled = true);
 
       if (selectedIndex === q.correct) {
         playSound('correct');
         player.score += q.points;
-        player.tile = Math.min(50, player.tile + 1); // Bônus de +1 casa por acertar
+        player.tile = Math.min(gameState.totalTiles, player.tile + 1);
 
         feedback.className = "p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all bg-emerald-950/80 border-emerald-500 text-emerald-300";
-        feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-xl mb-1"></i><br/>Resposta Correta! Você ganhou <strong>+${q.points} pts</strong> e avançou <strong>+1 casa bônus</strong>!`;
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-xl mb-1"></i><br/>Resposta Correta! Ganhou <strong>+${q.points} pts</strong> e avançou <strong>+1 casa bônus</strong>!`;
       } else {
         playSound('wrong');
         feedback.className = "p-4 rounded-2xl border text-sm font-semibold text-center mb-4 transition-all bg-rose-950/80 border-rose-500 text-rose-300";
-        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 text-xl mb-1"></i><br/>Resposta Incorreta. A alternativa certa era: <strong>${q.options[q.correct]}</strong>`;
+        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 text-xl mb-1"></i><br/>Resposta Incorreta. A certa era: <strong>${q.options[q.correct]}</strong>`;
       }
 
       renderPawns();
@@ -1067,18 +1095,15 @@
       document.getElementById('btnNextTurn').classList.remove('hidden');
     }
 
-    /* FECHAR MODAL DE PERGUNTA & AVANÇAR TURNO */
     function closeQuestionModal() {
       document.getElementById('modalQuestion').classList.add('hidden');
 
-      // Verifica se alguém venceu após o acerto/bônus
       const player = gameState.players[gameState.currentPlayerIndex];
-      if (player.tile >= 50) {
+      if (player.tile >= gameState.totalTiles) {
         showVictoryModal();
         return;
       }
 
-      // Passa a vez para o próximo jogador
       gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
       if (gameState.currentPlayerIndex === 0) {
         gameState.round++;
@@ -1088,23 +1113,22 @@
       updateScoreboard();
     }
 
-    /* TELA FINAL DE VITÓRIA E CLASSIFICAÇÃO COMPLETA DE TODOS OS PARTICIPANTES */
     function showVictoryModal() {
       if (window.confetti) {
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
       }
 
-      // Ordena TODOS os jogadores pela casa alcançada e depois pela pontuação
+      document.getElementById('victorySubtitle').innerText = `Chegou à Casa ${gameState.totalTiles} e venceu a Trilha do Conhecimento!`;
+
       const sorted = [...gameState.players].sort((a, b) => {
         if (b.tile !== a.tile) return b.tile - a.tile;
         return b.score - a.score;
       });
 
-      // PÓDIO TOP 3
       const podium = document.getElementById('podiumContainer');
       podium.innerHTML = '';
 
-      const top3 = [sorted[1], sorted[0], sorted[2]].filter(Boolean); // 2º, 1º, 3º lugar na ordem do pódio visual
+      const top3 = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
 
       top3.forEach((p) => {
         const isFirst = p === sorted[0];
@@ -1131,7 +1155,6 @@
         podium.appendChild(item);
       });
 
-      // CLASSIFICAÇÃO COMPLETA DE TODOS OS PARTICIPANTES (1º até o último)
       const rankingList = document.getElementById('rankingList');
       rankingList.innerHTML = '';
 
@@ -1162,7 +1185,6 @@
       document.getElementById('modalVictory').classList.remove('hidden');
     }
 
-    /* REINICIAR PARTIDA COM OS MESMOS JOGADORES */
     function restartSamePlayers() {
       gameState.players.forEach(p => {
         p.tile = 1;
@@ -1178,7 +1200,6 @@
       updateActivePlayerUI();
     }
 
-    /* UTILITÁRIOS DE MODAL E COPIAR CÓDIGO */
     function openSetupModal() {
       document.getElementById('modalVictory').classList.add('hidden');
       document.getElementById('modalSetup').classList.remove('hidden');
@@ -1195,7 +1216,7 @@
     function copyRoomCode() {
       if (!gameState.roomCode) return;
       navigator.clipboard.writeText(gameState.roomCode);
-      alert(`Código da sala (${gameState.roomCode}) copiado para a área de transferência!`);
+      alert(`Código da sala (${gameState.roomCode}) copiado!`);
     }
   </script>
 </body>
